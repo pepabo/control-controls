@@ -41,6 +41,11 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	if os.Getenv("DEBUG") != "" && os.Getenv("DEBUG") != "0" {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
+
 	rootCmd.SetOut(os.Stdout)
 	rootCmd.SetErr(os.Stderr)
 	if err := rootCmd.Execute(); err != nil {
