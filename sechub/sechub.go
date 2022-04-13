@@ -38,6 +38,7 @@ type SecHub struct {
 	Standards  Standards
 	Regions    Regions
 	region     string
+	enabled    bool
 }
 
 func New(r string) *SecHub {
@@ -60,7 +61,6 @@ func Load(p string) (*SecHub, error) {
 
 func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 	region := cfg.Region
-	log.Info().Msg(fmt.Sprintf("Applying to %s", region))
 	c := securityhub.NewFromConfig(cfg)
 	d := sh.Regions.findByRegionName(region)
 	a := sh
@@ -71,16 +71,24 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 	if err := current.Fetch(ctx, cfg); err != nil {
 		return err
 	}
+	if !current.enabled {
+		log.Info().Str("Region", region).Msg("Skip because Security Hub is not enabled")
+		return nil
+	}
 	diff := Diff(current, a)
 	if diff == nil {
-		log.Info().Msg(fmt.Sprintf("No difference %s", region))
+		log.Info().Str("Region", region).Msg("No changes")
 		return nil
 	}
 	update := false
 
 	// AutoEnable
 	if diff.AutoEnable != nil {
-		log.Debug().Str("Region", region).Msg(fmt.Sprintf("AutoEnableControls: %v", *diff.AutoEnable))
+		if *diff.AutoEnable == true {
+			log.Debug().Str("Region", region).Msg("Enable AutoEnableControls")
+		} else {
+			log.Debug().Str("Region", region).Msg("Disable AutoEnableControls")
+		}
 		if _, err := c.UpdateSecurityHubConfiguration(ctx, &securityhub.UpdateSecurityHubConfigurationInput{
 			AutoEnableControls: *diff.AutoEnable,
 		}); err != nil {
@@ -181,14 +189,13 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 	}
 
 	if !update {
-		log.Info().Msg(fmt.Sprintf("No difference %s", region))
+		log.Info().Str("Region", region).Msg("No changes")
 	}
 
 	return nil
 }
 
 func (sh *SecHub) Fetch(ctx context.Context, cfg aws.Config) error {
-	log.Info().Msg(fmt.Sprintf("Fetching controls from %s", cfg.Region))
 	c := securityhub.NewFromConfig(cfg)
 	stds, err := standards(ctx, c)
 	if err != nil {
@@ -197,6 +204,9 @@ func (sh *SecHub) Fetch(ctx context.Context, cfg aws.Config) error {
 	hub, err := c.DescribeHub(ctx, &securityhub.DescribeHubInput{})
 	if err != nil {
 		return err
+	}
+	if hub.SubscribedAt != nil {
+		sh.enabled = true
 	}
 	sh.AutoEnable = aws.Bool(hub.AutoEnableControls)
 	for _, std := range stds {

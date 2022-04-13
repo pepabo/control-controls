@@ -23,12 +23,14 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/goccy/go-yaml"
 	"github.com/pepabo/control-controls/sechub"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -51,6 +53,7 @@ var exportCmd = &cobra.Command{
 		hubs := []*sechub.SecHub{}
 		for _, r := range regions.Regions {
 			cfg.Region = *r.RegionName
+			log.Info().Msg(fmt.Sprintf("Fetching controls from %s", cfg.Region))
 			sh := sechub.New(*r.RegionName)
 			if err := sh.Fetch(ctx, cfg); err != nil {
 				return err

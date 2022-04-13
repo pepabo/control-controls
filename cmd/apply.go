@@ -23,11 +23,13 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/pepabo/control-controls/sechub"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -55,11 +57,13 @@ var applyCmd = &cobra.Command{
 
 		for _, r := range regions.Regions {
 			cfg.Region = *r.RegionName
+			log.Info().Msg(fmt.Sprintf("Applying to %s", cfg.Region))
 			if err := hub.Apply(ctx, cfg); err != nil {
 				return err
 			}
 		}
 
+		log.Info().Msg("Apply complete")
 		return nil
 	},
 }
