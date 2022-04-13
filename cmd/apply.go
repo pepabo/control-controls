@@ -27,59 +27,43 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/goccy/go-yaml"
 	"github.com/pepabo/control-controls/sechub"
 	"github.com/spf13/cobra"
 )
 
-var exportCmd = &cobra.Command{
-	Use:   "export",
-	Short: "export",
-	Long:  `export.`,
+var applyCmd = &cobra.Command{
+	Use:   "apply",
+	Short: "apply",
+	Long:  `apply.`,
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 		cfg, err := config.LoadDefaultConfig(ctx)
 		if err != nil {
 			return err
 		}
+		hub, err := sechub.Load(args[0])
+		if err != nil {
+			return err
+		}
+
 		ec2s := ec2.NewFromConfig(cfg)
 		regions, err := ec2s.DescribeRegions(ctx, &ec2.DescribeRegionsInput{AllRegions: aws.Bool(false)})
 		if err != nil {
 			return err
 		}
-		var base *sechub.SecHub
-		hubs := []*sechub.SecHub{}
+
 		for _, r := range regions.Regions {
 			cfg.Region = *r.RegionName
-			sh := sechub.New(*r.RegionName)
-			if err := sh.Fetch(ctx, cfg); err != nil {
+			if err := hub.Apply(ctx, cfg); err != nil {
 				return err
 			}
-			if base == nil {
-				base = sh
-			} else {
-				base = sechub.Intersect(base, sh)
-			}
-			hubs = append(hubs, sh)
 		}
 
-		for _, h := range hubs {
-			d := sechub.Diff(base, h)
-			if d != nil {
-				base.Regions = append(base.Regions, d)
-			}
-		}
-
-		b, err := yaml.Marshal(base)
-		if err != nil {
-			return err
-		}
-
-		cmd.Println(string(b))
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(exportCmd)
+	rootCmd.AddCommand(applyCmd)
 }
