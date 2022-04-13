@@ -76,6 +76,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 		log.Info().Msg(fmt.Sprintf("No difference %s", region))
 		return nil
 	}
+	update := false
 
 	// AutoEnable
 	if diff.AutoEnable != nil {
@@ -102,6 +103,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 
 		// Standards.Enable
 		if std.Enable != nil {
+			update = true
 			switch *std.Enable {
 			case true:
 				log.Debug().Str("Region", region).Str("Standard", key).Msg("Enable standard")
@@ -146,6 +148,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 				log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
 				continue
 			}
+			update = true
 			log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Enable control")
 			if _, err := c.UpdateStandardsControl(ctx, &securityhub.UpdateStandardsControlInput{
 				StandardsControlArn: arn,
@@ -163,6 +166,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 				log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
 				continue
 			}
+			update = true
 			log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Disable control")
 			if _, err := c.UpdateStandardsControl(ctx, &securityhub.UpdateStandardsControlInput{
 				StandardsControlArn: arn,
@@ -174,6 +178,10 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 			// * UpdateStandardsControl - RateLimit of 1 request per second, BurstLimit of 5 requests per second.
 			time.Sleep(1 * time.Second)
 		}
+	}
+
+	if !update {
+		log.Info().Msg(fmt.Sprintf("No difference %s", region))
 	}
 
 	return nil
