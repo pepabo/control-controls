@@ -8,6 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.34.0
 	github.com/aws/aws-sdk-go-v2/service/securityhub v1.20.0
 	github.com/goccy/go-yaml v1.9.5
+	github.com/google/go-cmp v0.5.7
 	github.com/rs/zerolog v1.26.1
 	github.com/spf13/cobra v1.4.0
 )
