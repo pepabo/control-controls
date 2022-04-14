@@ -95,7 +95,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 
 		// Standards.Controls
 		if std.Controls == nil {
-			log.Info().Str("Region", region).Str("Standard", key).Msg("Skip controls as there is no difference")
+			log.Debug().Str("Region", region).Str("Standard", key).Msg("Skip controls as there is no difference")
 			continue
 		}
 		cs, err := ctrls(ctx, c, s.subscriptionArn)
@@ -105,7 +105,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 		for _, id := range std.Controls.Enable {
 			arn, ok := cs.arns[id]
 			if !ok {
-				log.Info().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
+				log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
 				continue
 			}
 			if contains(cs.Enable, id) {
@@ -126,7 +126,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 		for _, id := range std.Controls.Disable {
 			arn, ok := cs.arns[id]
 			if !ok {
-				log.Info().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
+				log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
 				continue
 			}
 			if contains(cs.Disable, id) {
