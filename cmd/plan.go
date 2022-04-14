@@ -36,6 +36,7 @@ var planCmd = &cobra.Command{
 	Use:   "plan [CONFIG_FILE]",
 	Short: "plan",
 	Long:  `plan.`,
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 		cfg, err := config.LoadDefaultConfig(ctx)
