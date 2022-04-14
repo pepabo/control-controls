@@ -11,7 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
+func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) error {
 	region := cfg.Region
 	c := securityhub.NewFromConfig(cfg)
 	d := sh.Regions.findByRegionName(region)
@@ -37,9 +37,9 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 	// AutoEnable
 	if diff.AutoEnable != nil {
 		if *diff.AutoEnable == true {
-			log.Debug().Str("Region", region).Msg("Enable auto-enable-controls")
+			log.Info().Str("Region", region).Msg("Enable auto-enable-controls")
 		} else {
-			log.Debug().Str("Region", region).Msg("Disable auto-enable-controls")
+			log.Info().Str("Region", region).Msg("Disable auto-enable-controls")
 		}
 		if _, err := c.UpdateSecurityHubConfiguration(ctx, &securityhub.UpdateSecurityHubConfigurationInput{
 			AutoEnableControls: *diff.AutoEnable,
@@ -66,7 +66,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 			update = true
 			switch *std.Enable {
 			case true:
-				log.Debug().Str("Region", region).Str("Standard", key).Msg("Enable standard")
+				log.Info().Str("Region", region).Str("Standard", key).Msg("Enable standard")
 				o, err := c.BatchEnableStandards(ctx, &securityhub.BatchEnableStandardsInput{
 					StandardsSubscriptionRequests: []types.StandardsSubscriptionRequest{
 						types.StandardsSubscriptionRequest{
@@ -83,7 +83,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 				// * BatchEnableStandards - RateLimit of 1 request per second, BurstLimit of 1 request per second.
 				time.Sleep(1 * time.Second)
 			case false:
-				log.Debug().Str("Region", region).Str("Standard", key).Msg("Disable standard")
+				log.Info().Str("Region", region).Str("Standard", key).Msg("Disable standard")
 				if _, err := c.BatchDisableStandards(ctx, &securityhub.BatchDisableStandardsInput{
 					StandardsSubscriptionArns: []string{*s.subscriptionArn},
 				}); err != nil {
@@ -95,7 +95,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 
 		// Standards.Controls
 		if std.Controls == nil {
-			log.Debug().Str("Region", region).Str("Standard", key).Msg("Skip controls as there is no difference")
+			log.Info().Str("Region", region).Str("Standard", key).Msg("Skip controls as there is no difference")
 			continue
 		}
 		cs, err := ctrls(ctx, c, s.subscriptionArn)
@@ -105,14 +105,14 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 		for _, id := range std.Controls.Enable {
 			arn, ok := cs.arns[id]
 			if !ok {
-				log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
+				log.Info().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
 				continue
 			}
 			if contains(cs.Enable, id) {
 				continue
 			}
 			update = true
-			log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Enable control")
+			log.Info().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Enable control")
 			if _, err := c.UpdateStandardsControl(ctx, &securityhub.UpdateStandardsControlInput{
 				StandardsControlArn: arn,
 				ControlStatus:       types.ControlStatusEnabled,
@@ -126,17 +126,18 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 		for _, id := range std.Controls.Disable {
 			arn, ok := cs.arns[id]
 			if !ok {
-				log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
+				log.Info().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
 				continue
 			}
 			if contains(cs.Disable, id) {
 				continue
 			}
 			update = true
-			log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Disable control")
+			log.Info().Str("Region", region).Str("Standard", key).Str("Control", id).Str("Reason", reason).Msg("Disable control")
 			if _, err := c.UpdateStandardsControl(ctx, &securityhub.UpdateStandardsControlInput{
 				StandardsControlArn: arn,
 				ControlStatus:       types.ControlStatusDisabled,
+				DisabledReason:      &reason,
 			}); err != nil {
 				return err
 			}

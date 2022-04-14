@@ -267,7 +267,7 @@ func ctrls(ctx context.Context, c *securityhub.Client, subscriptionArn *string) 
 			case types.ControlStatusEnabled:
 				cs.Enable = append(cs.Enable, *ctrl.ControlId)
 			case types.ControlStatusDisabled:
-				cs.Disable = append(cs.Enable, *ctrl.ControlId)
+				cs.Disable = append(cs.Disable, *ctrl.ControlId)
 			}
 		}
 		nt = ctrls.NextToken
