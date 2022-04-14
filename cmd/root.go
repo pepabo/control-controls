@@ -22,9 +22,12 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"context"
 	"os"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/pepabo/control-controls/version"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -51,4 +54,17 @@ func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
+}
+
+func regions(ctx context.Context, cfg aws.Config) ([]string, error) {
+	ec2s := ec2.NewFromConfig(cfg)
+	rs, err := ec2s.DescribeRegions(ctx, &ec2.DescribeRegionsInput{AllRegions: aws.Bool(false)})
+	if err != nil {
+		return nil, err
+	}
+	regions := []string{}
+	for _, r := range rs.Regions {
+		regions = append(regions, *r.RegionName)
+	}
+	return regions, nil
 }

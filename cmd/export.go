@@ -25,9 +25,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/goccy/go-yaml"
 	"github.com/pepabo/control-controls/sechub"
 	"github.com/rs/zerolog/log"
@@ -44,17 +42,17 @@ var exportCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		ec2s := ec2.NewFromConfig(cfg)
-		regions, err := ec2s.DescribeRegions(ctx, &ec2.DescribeRegionsInput{AllRegions: aws.Bool(false)})
+
+		regions, err := regions(ctx, cfg)
 		if err != nil {
 			return err
 		}
 		var base *sechub.SecHub
 		hubs := []*sechub.SecHub{}
-		for _, r := range regions.Regions {
-			cfg.Region = *r.RegionName
-			log.Info().Msg(fmt.Sprintf("Fetching controls from %s", cfg.Region))
-			sh := sechub.New(*r.RegionName)
+		for _, r := range regions {
+			cfg.Region = r
+			log.Info().Msg(fmt.Sprintf("Fetching controls from %s", r))
+			sh := sechub.New(r)
 			if err := sh.Fetch(ctx, cfg); err != nil {
 				return err
 			}

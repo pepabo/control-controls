@@ -25,9 +25,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/pepabo/control-controls/sechub"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -49,15 +47,14 @@ var applyCmd = &cobra.Command{
 			return err
 		}
 
-		ec2s := ec2.NewFromConfig(cfg)
-		regions, err := ec2s.DescribeRegions(ctx, &ec2.DescribeRegionsInput{AllRegions: aws.Bool(false)})
+		regions, err := regions(ctx, cfg)
 		if err != nil {
 			return err
 		}
 
-		for _, r := range regions.Regions {
-			cfg.Region = *r.RegionName
-			log.Info().Msg(fmt.Sprintf("Applying to %s", cfg.Region))
+		for _, r := range regions {
+			cfg.Region = r
+			log.Info().Msg(fmt.Sprintf("Applying to %s", r))
 			if err := hub.Apply(ctx, cfg); err != nil {
 				return err
 			}
