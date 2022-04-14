@@ -263,3 +263,21 @@ s/v/1.0.0
 
 Apply complete
 ```
+
+## Install
+
+**homebrew tap:**
+
+```console
+$ brew install pepabo/tap/control-controls
+```
+
+**manually:**
+
+Download binany from [releases page](https://github.com/pepabo/control-controls/releases)
+
+**go install:**
+
+```console
+$ go install github.com/pepabo/control-controls@latest
+```
