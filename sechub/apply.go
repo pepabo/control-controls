@@ -108,6 +108,9 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 				log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
 				continue
 			}
+			if contains(cs.Enable, id) {
+				continue
+			}
 			update = true
 			log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Enable control")
 			if _, err := c.UpdateStandardsControl(ctx, &securityhub.UpdateStandardsControlInput{
@@ -124,6 +127,9 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 			arn, ok := cs.arns[id]
 			if !ok {
 				log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
+				continue
+			}
+			if contains(cs.Disable, id) {
 				continue
 			}
 			update = true
