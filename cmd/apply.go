@@ -31,6 +31,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var disabledReason string
+
 var applyCmd = &cobra.Command{
 	Use:   "apply [CONFIG_FILE]",
 	Short: "apply",
@@ -55,16 +57,18 @@ var applyCmd = &cobra.Command{
 		for _, r := range regions {
 			cfg.Region = r
 			log.Info().Msg(fmt.Sprintf("Applying to %s", r))
-			if err := hub.Apply(ctx, cfg); err != nil {
+			if err := hub.Apply(ctx, cfg, disabledReason); err != nil {
 				return err
 			}
 		}
 
-		log.Info().Msg("Apply complete")
+		cmd.Println("")
+		cmd.Println("Apply complete")
 		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(applyCmd)
+	applyCmd.Flags().StringVarP(&disabledReason, "disabled-reason", "", "", "A description of the reason why you are disabling a security standard control.")
 }
