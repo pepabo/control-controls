@@ -1,0 +1,77 @@
+before:
+  hooks:
+    - go mod download
+    - go mod tidy
+builds:
+  -
+    id: control-controls-darwin
+    ldflags:
+      - -s -w -X github.com/k1LoW/control-controls.version={{.Version}} -X github.com/k1LoW/control-controls.commit={{.FullCommit}} -X github.com/k1LoW/control-controls.date={{.Date}} -X github.com/k1LoW/control-controls/version.Version={{.Version}}
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+  -
+    id: control-controls-linux
+    ldflags:
+      - -s -w -X github.com/k1LoW/control-controls.version={{.Version}} -X github.com/k1LoW/control-controls.commit={{.FullCommit}} -X github.com/k1LoW/control-controls.date={{.Date}} -X github.com/k1LoW/control-controls/version.Version={{.Version}}
+    goos:
+      - linux
+    goarch:
+      - amd64
+archives:
+  -
+    id: control-controls-archive
+    name_template: '{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    format_overrides:
+      - goos: darwin
+        format: zip
+    files:
+      - CREDITS
+      - README.md
+      - CHANGELOG.md
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Version }}-next"
+changelog:
+  skip: true
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+brews:
+  -
+    name: control-controls
+    tap:
+      owner: pepabo
+      name: homebrew-tap
+    commit_author:
+      name: 'GMO Pepabo, inc.'
+    homepage: https://github.com/pepabo/control-controls
+    description: control-controls control controls of AWS Security Hub across all regions.
+    license: MIT
+    install: |
+      bin.install 'control-controls'
+      output = Utils.safe_popen_read("#{bin}/control-controls", 'completion', 'bash')
+      (bash_completion/'control-controls').write output
+      output = Utils.safe_popen_read("#{bin}/control-controls", 'completion', 'zsh')
+      (zsh_completion/'_control-controls').write output
+nfpms:
+  -
+    id: control-controls-nfpms
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}-1_{{ .Arch }}"
+    builds:
+      - control-controls-linux
+    homepage: https://github.com/pepabo/control-controls
+    maintainer: 'GMO Pepabo, inc.'
+    description: control-controls control controls of AWS Security Hub across all regions.
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+    bindir: /usr/bin
+    epoch: 1
