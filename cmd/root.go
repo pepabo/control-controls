@@ -36,8 +36,8 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:          "control-controls",
-	Short:        "control-controls control controls of AWS Security Hub",
-	Long:         `control-controls control controls of AWS Security Hub.`,
+	Short:        "control-controls control controls of AWS Security Hub across all regions",
+	Long:         `control-controls control controls of AWS Security Hub across all regions.`,
 	SilenceUsage: true,
 	Version:      version.Version,
 }

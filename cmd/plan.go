@@ -32,9 +32,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// planCmd represents the plan command
 var planCmd = &cobra.Command{
-	Use:   "plan",
+	Use:   "plan [CONFIG_FILE]",
 	Short: "plan",
 	Long:  `plan.`,
 	RunE: func(cmd *cobra.Command, args []string) error {

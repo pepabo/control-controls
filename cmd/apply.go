@@ -32,7 +32,7 @@ import (
 )
 
 var applyCmd = &cobra.Command{
-	Use:   "apply",
+	Use:   "apply [CONFIG_FILE]",
 	Short: "apply",
 	Long:  `apply.`,
 	Args:  cobra.ExactArgs(1),
