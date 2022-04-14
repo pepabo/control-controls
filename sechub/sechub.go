@@ -156,7 +156,7 @@ func Diff(base, a *SecHub) *SecHub {
 }
 
 func Override(base, a *SecHub) *SecHub {
-	o := deepcopy(base)
+	o := contextcopy(base)
 	// AutoEnable
 	if a.AutoEnable != nil {
 		o.AutoEnable = a.AutoEnable
@@ -306,7 +306,7 @@ func contains(s []string, e string) bool {
 	return false
 }
 
-func deepcopy(in *SecHub) *SecHub {
+func contextcopy(in *SecHub) *SecHub {
 	in.Regions = nil
 	b, _ := yaml.Marshal(in)
 	out := &SecHub{}
