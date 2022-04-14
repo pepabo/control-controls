@@ -37,9 +37,9 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config) error {
 	// AutoEnable
 	if diff.AutoEnable != nil {
 		if *diff.AutoEnable == true {
-			log.Debug().Str("Region", region).Msg("Enable AutoEnableControls")
+			log.Debug().Str("Region", region).Msg("Enable auto-enable-controls")
 		} else {
-			log.Debug().Str("Region", region).Msg("Disable AutoEnableControls")
+			log.Debug().Str("Region", region).Msg("Disable auto-enable-controls")
 		}
 		if _, err := c.UpdateSecurityHubConfiguration(ctx, &securityhub.UpdateSecurityHubConfigurationInput{
 			AutoEnableControls: *diff.AutoEnable,
