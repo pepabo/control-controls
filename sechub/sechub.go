@@ -3,6 +3,7 @@ package sechub
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -45,7 +46,7 @@ func New(r string) *SecHub {
 }
 
 func Load(p string) (*SecHub, error) {
-	b, err := os.ReadFile(p)
+	b, err := os.ReadFile(filepath.Clean(p))
 	if err != nil {
 		return nil, err
 	}
