@@ -316,7 +316,6 @@ func contains(s []string, e string) bool {
 }
 
 func contextcopy(in *SecHub) (*SecHub, error) {
-	in.Regions = nil
 	b, err := yaml.Marshal(in)
 	if err != nil {
 		return nil, err
@@ -325,6 +324,7 @@ func contextcopy(in *SecHub) (*SecHub, error) {
 	if err := yaml.UnmarshalWithOptions(b, out, yaml.DisallowDuplicateKey()); err != nil {
 		return nil, err
 	}
+	out.Regions = nil
 	return out, nil
 }
 
