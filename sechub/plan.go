@@ -26,9 +26,15 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config) ([]*Change, error) {
 	region := cfg.Region
 	c := securityhub.NewFromConfig(cfg)
 	d := sh.Regions.findByRegionName(region)
-	a := sh
+	a, err := contextcopy(sh)
+	if err != nil {
+		return nil, err
+	}
 	if d != nil {
-		a = Override(sh, d)
+		a, err = Override(sh, d)
+		if err != nil {
+			return nil, err
+		}
 	}
 	current := New(region)
 	if err := current.Fetch(ctx, cfg); err != nil {
@@ -38,7 +44,11 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config) ([]*Change, error) {
 		log.Info().Str("Region", region).Msg("Skip because Security Hub is not enabled")
 		return changes, nil
 	}
-	diff := Diff(current, a)
+	diff, err := Diff(current, a)
+	if err != nil {
+		return nil, err
+	}
+
 	if diff == nil {
 		return changes, nil
 	}

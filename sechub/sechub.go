@@ -94,10 +94,14 @@ func Intersect(a, b *SecHub) *SecHub {
 	return i
 }
 
-func Diff(base, a *SecHub) *SecHub {
+func Diff(base, a *SecHub) (*SecHub, error) {
+	b, err := contextcopy(base)
+	if err != nil {
+		return nil, err
+	}
 	d := New(a.region)
 	// AutoEnable
-	if base.AutoEnable != nil && a.AutoEnable != nil && *base.AutoEnable == *a.AutoEnable {
+	if b.AutoEnable != nil && a.AutoEnable != nil && *b.AutoEnable == *a.AutoEnable {
 		d.AutoEnable = nil
 	} else {
 		d.AutoEnable = a.AutoEnable
@@ -150,14 +154,18 @@ func Diff(base, a *SecHub) *SecHub {
 	}
 
 	if d.AutoEnable == nil && len(d.Standards) == 0 {
-		return nil
+		return nil, nil
 	}
 
-	return d
+	return d, nil
 }
 
-func Override(base, a *SecHub) *SecHub {
-	o := contextcopy(base)
+func Override(base, a *SecHub) (*SecHub, error) {
+	o, err := contextcopy(base)
+	if err != nil {
+		return nil, err
+	}
+
 	// AutoEnable
 	if a.AutoEnable != nil {
 		o.AutoEnable = a.AutoEnable
@@ -183,15 +191,15 @@ func Override(base, a *SecHub) *SecHub {
 			}
 		}
 	}
-	for _, k := range intersect(base.Standards.keys(), a.Standards.keys()) {
+	for _, k := range diff(o.Standards.keys(), a.Standards.keys()) {
 		as := a.Standards.findByKey(k)
 		if as == nil {
 			continue
 		}
-		base.Standards = append(base.Standards, as)
+		o.Standards = append(o.Standards, as)
 	}
 
-	return o
+	return o, nil
 }
 
 func (rs Regions) findByRegionName(name string) *SecHub {
@@ -307,12 +315,17 @@ func contains(s []string, e string) bool {
 	return false
 }
 
-func contextcopy(in *SecHub) *SecHub {
+func contextcopy(in *SecHub) (*SecHub, error) {
 	in.Regions = nil
-	b, _ := yaml.Marshal(in)
+	b, err := yaml.Marshal(in)
+	if err != nil {
+		return nil, err
+	}
 	out := &SecHub{}
-	_ = yaml.Unmarshal(b, out)
-	return out
+	if err := yaml.UnmarshalWithOptions(b, out, yaml.DisallowDuplicateKey()); err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func key(arn string) string {

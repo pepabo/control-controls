@@ -65,7 +65,10 @@ var exportCmd = &cobra.Command{
 		}
 
 		for _, h := range hubs {
-			d := sechub.Diff(base, h)
+			d, err := sechub.Diff(base, h)
+			if err != nil {
+				return err
+			}
 			if d != nil {
 				base.Regions = append(base.Regions, d)
 			}
