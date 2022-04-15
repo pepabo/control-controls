@@ -1,3 +1,7 @@
+## [v0.1.2](https://github.com/pepabo/control-controls/compare/v0.1.1...v0.1.2) (2022-04-15)
+
+* Fix contextcopy bug [#6](https://github.com/pepabo/control-controls/pull/6) ([k1LoW](https://github.com/k1LoW))
+
 ## [v0.1.1](https://github.com/pepabo/control-controls/compare/v0.1.0...v0.1.1) (2022-04-15)
 
 * Fix sechub.Override behavior [#5](https://github.com/pepabo/control-controls/pull/5) ([k1LoW](https://github.com/k1LoW))
