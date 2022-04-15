@@ -82,6 +82,7 @@ var planCmd = &cobra.Command{
 					red("%s %s\n", c.ChangeType, c.Key)
 				}
 			}
+			cmd.Println("")
 			cmd.Printf("Plan: %d to enable, %d to disable\n", enable, disable)
 		}
 
