@@ -63,6 +63,7 @@ func Intersect(a, b *SecHub) *SecHub {
 	if a.AutoEnable != nil && b.AutoEnable != nil && *a.AutoEnable == *b.AutoEnable {
 		i.AutoEnable = a.AutoEnable
 	} else {
+		// default: true
 		i.AutoEnable = aws.Bool(true)
 	}
 
