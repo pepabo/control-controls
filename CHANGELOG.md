@@ -1,3 +1,7 @@
+## [v0.2.0](https://github.com/pepabo/control-controls/compare/v0.1.2...v0.2.0) (2022-04-18)
+
+* exit status 2 when plan diff is not empty [#7](https://github.com/pepabo/control-controls/pull/7) ([k1LoW](https://github.com/k1LoW))
+
 ## [v0.1.2](https://github.com/pepabo/control-controls/compare/v0.1.1...v0.1.2) (2022-04-15)
 
 * Fix contextcopy bug [#6](https://github.com/pepabo/control-controls/pull/6) ([k1LoW](https://github.com/k1LoW))
