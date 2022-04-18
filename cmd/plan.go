@@ -24,6 +24,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/fatih/color"
@@ -84,6 +85,7 @@ var planCmd = &cobra.Command{
 			}
 			cmd.Println("")
 			cmd.Printf("Plan: %d to enable, %d to disable\n", enable, disable)
+			os.Exit(2)
 		}
 
 		return nil
