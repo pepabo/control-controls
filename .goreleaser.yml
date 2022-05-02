@@ -6,7 +6,7 @@ builds:
   -
     id: control-controls-darwin
     ldflags:
-      - -s -w -X github.com/k1LoW/control-controls.version={{.Version}} -X github.com/k1LoW/control-controls.commit={{.FullCommit}} -X github.com/k1LoW/control-controls.date={{.Date}} -X github.com/k1LoW/control-controls/version.Version={{.Version}}
+      - -s -w -X github.com/pepabo/control-controls.version={{.Version}} -X github.com/pepabo/control-controls.commit={{.FullCommit}} -X github.com/pepabo/control-controls.date={{.Date}} -X github.com/pepabo/control-controls/version.Version={{.Version}}
     goos:
       - darwin
     goarch:
@@ -15,7 +15,7 @@ builds:
   -
     id: control-controls-linux
     ldflags:
-      - -s -w -X github.com/k1LoW/control-controls.version={{.Version}} -X github.com/k1LoW/control-controls.commit={{.FullCommit}} -X github.com/k1LoW/control-controls.date={{.Date}} -X github.com/k1LoW/control-controls/version.Version={{.Version}}
+      - -s -w -X github.com/pepabo/control-controls.version={{.Version}} -X github.com/pepabo/control-controls.commit={{.FullCommit}} -X github.com/pepabo/control-controls.date={{.Date}} -X github.com/pepabo/control-controls/version.Version={{.Version}}
     goos:
       - linux
     goarch:
