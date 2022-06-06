@@ -57,7 +57,7 @@ var planCmd = &cobra.Command{
 		for _, r := range regions {
 			cfg.Region = r
 			log.Info().Msg(fmt.Sprintf("Checking %s", r))
-			c, err := hub.Plan(ctx, cfg)
+			c, err := hub.Plan(ctx, cfg, disabledReason)
 			if err != nil {
 				return err
 			}
@@ -80,7 +80,7 @@ var planCmd = &cobra.Command{
 					green("%s %s\n", c.ChangeType, c.Key)
 				case sechub.DISABLE:
 					disable += 1
-					red("%s %s\n", c.ChangeType, c.Key)
+					red("%s %s (disabled reason: %s)\n", c.ChangeType, c.Key, c.DisabledReason)
 				}
 			}
 			cmd.Println("")
@@ -94,4 +94,5 @@ var planCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(planCmd)
+	applyCmd.Flags().StringVarP(&disabledReason, "disabled-reason", "", "", "A description of the reason why you are disabling a security standard control.")
 }

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/goccy/go-yaml"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
@@ -92,7 +93,7 @@ func TestIntersect(t *testing.T) {
 						enabledByDefault: true,
 						Controls: &Controls{
 							Enable:  []string{"IAM.1"},
-							Disable: []string{},
+							Disable: yaml.MapSlice{},
 						},
 					},
 				},

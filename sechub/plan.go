@@ -17,11 +17,12 @@ const (
 )
 
 type Change struct {
-	Key        string
-	ChangeType ChangeType
+	Key            string
+	ChangeType     ChangeType
+	DisabledReason string
 }
 
-func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config) ([]*Change, error) {
+func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config, reason string) ([]*Change, error) {
 	changes := []*Change{}
 	region := cfg.Region
 	c := securityhub.NewFromConfig(cfg)
@@ -112,18 +113,24 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config) ([]*Change, error) {
 				continue
 			}
 			changes = append(changes, &Change{
-				Key:        fmt.Sprintf("%s::standards::%s::controls::%s", region, key, id),
-				ChangeType: ENABLE,
+				Key:            fmt.Sprintf("%s::standards::%s::controls::%s", region, key, id),
+				ChangeType:     ENABLE,
+				DisabledReason: "",
 			})
 		}
-		for _, id := range std.Controls.Disable {
+		for _, d := range std.Controls.Disable {
+			id := d.Key.(string)
+			if d.Value.(string) != "" {
+				reason = d.Value.(string)
+			}
 			_, ok := cs.arns[id]
 			if !ok {
 				continue
 			}
 			changes = append(changes, &Change{
-				Key:        fmt.Sprintf("%s::standards::%s::controls::%s", region, key, id),
-				ChangeType: DISABLE,
+				Key:            fmt.Sprintf("%s::standards::%s::controls::%s", region, key, id),
+				ChangeType:     DISABLE,
+				DisabledReason: reason,
 			})
 		}
 	}
