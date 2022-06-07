@@ -80,7 +80,11 @@ var planCmd = &cobra.Command{
 					green("%s %s\n", c.ChangeType, c.Key)
 				case sechub.DISABLE:
 					disable += 1
-					red("%s %s (disabled reason: %s)\n", c.ChangeType, c.Key, c.DisabledReason)
+					if c.DisabledReason == "" {
+						red("%s %s\n", c.ChangeType, c.Key)
+					} else {
+						red("%s %s (disabled reason: %s)\n", c.ChangeType, c.Key, c.DisabledReason)
+					}
 				}
 			}
 			cmd.Println("")
