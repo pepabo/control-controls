@@ -1,3 +1,8 @@
+## [v0.3.0](https://github.com/pepabo/control-controls/compare/v0.2.1...v0.3.0) (2022-06-07)
+
+* Fix flag [#10](https://github.com/pepabo/control-controls/pull/10) ([k1LoW](https://github.com/k1LoW))
+* Add reason of disabled in the configuration file. [#9](https://github.com/pepabo/control-controls/pull/9) ([k1LoW](https://github.com/k1LoW))
+
 ## [v0.2.1](https://github.com/pepabo/control-controls/compare/v0.2.0...v0.2.1) (2022-04-18)
 
 * Fix nil pointer dereference [#8](https://github.com/pepabo/control-controls/pull/8) ([k1LoW](https://github.com/k1LoW))
