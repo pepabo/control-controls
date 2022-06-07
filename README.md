@@ -192,7 +192,10 @@ standards:
     enable: true
     controls:
       enable: [APIGateway.5, AutoScaling.1, AutoScaling.2, CloudTrail.1, CloudTrail.2, CloudTrail.4, CloudTrail.5, Config.1, DynamoDB.1, EC2.19, EC2.2, EC2.21, EC2.6, ECR.3, ELB.10, ELB.5, ELB.7, ES.4, ES.5, ES.6, ES.7, ES.8, IAM.1, IAM.2, IAM.3, IAM.5, IAM.6, IAM.7, IAM.8, NetworkFirewall.6, RDS.11, RDS.17, RDS.18, RDS.19, RDS.2, RDS.20, RDS.21, RDS.22, RDS.23, RDS.25, RDS.3, RDS.5, S3.1, S3.10, S3.11, S3.12, S3.2, S3.3, S3.4, S3.5, S3.6, S3.9, SQS.1, SSM.1, SSM.4]
-      disable: [Redshift.4, Redshift.6, Redshift.8]
+      disable:
+        Redshift.4: Redshift is not running.
+        Redshift.6: Redshift is not running.
+        Redshift.8: Redshift is not running.
 [...]
 ```
 
@@ -217,17 +220,17 @@ $ control-controls plan controls.yml
 2022-04-14T15:18:19+09:00 INF Checking us-east-2
 2022-04-14T15:18:25+09:00 INF Checking us-west-1
 2022-04-14T15:18:31+09:00 INF Checking us-west-2
-- eu-north-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.4
-- eu-north-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.6
-- eu-north-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.8
-- ap-south-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.4
-- ap-south-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.6
+- eu-north-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.4 (disabled reason: Redshift is not running.)
+- eu-north-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.6 (disabled reason: Redshift is not running.)
+- eu-north-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.8 (disabled reason: Redshift is not running.)
+- ap-south-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.4 (disabled reason: Redshift is not running.)
+- ap-south-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.6 (disabled reason: Redshift is not running.)
 [...]
-- us-west-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.6
-- us-west-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.8
-- us-west-2::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.4
-- us-west-2::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.6
-- us-west-2::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.8
+- us-west-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.6 (disabled reason: Redshift is not running.)
+- us-west-1::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.8 (disabled reason: Redshift is not running.)
+- us-west-2::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.4 (disabled reason: Redshift is not running.)
+- us-west-2::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.6 (disabled reason: Redshift is not running.)
+- us-west-2::standards::aws-foundational-security-best-practices/v/1.0.0::controls::Redshift.8 (disabled reason: Redshift is not running.)
 
 Plan: 0 to enable, 51 to disable
 ```
@@ -235,31 +238,31 @@ Plan: 0 to enable, 51 to disable
 Apply changes.
 
 ``` console
-$ control-controls apply controls.yml --disabled-reason 'Redshift is not running.'
+$ control-controls apply controls.yml
 2022-04-14T15:43:37+09:00 INF Applying to eu-north-1
 2022-04-14T15:43:46+09:00 INF Disable control Control=Redshift.4 Reason="Redshift is not running." Region=eu-north-1 Standard=aws-foundational-security-best-practice
-s/v/1.0.0                                                                                                                     
+s/v/1.0.0
 2022-04-14T15:43:47+09:00 INF Disable control Control=Redshift.6 Reason="Redshift is not running." Region=eu-north-1 Standard=aws-foundational-security-best-practice
-s/v/1.0.0                                                                                                                     
+s/v/1.0.0
 2022-04-14T15:43:49+09:00 INF Disable control Control=Redshift.8 Reason="Redshift is not running." Region=eu-north-1 Standard=aws-foundational-security-best-practice
-s/v/1.0.0                                                                                                                     
+s/v/1.0.0
 2022-04-14T15:43:51+09:00 INF Applying to ap-south-1
 2022-04-14T15:43:56+09:00 INF Disable control Control=Redshift.4 Reason="Redshift is not running." Region=ap-south-1 Standard=aws-foundational-security-best-practice
-s/v/1.0.0                                                                                                                     
+s/v/1.0.0
 2022-04-14T15:43:57+09:00 INF Disable control Control=Redshift.6 Reason="Redshift is not running." Region=ap-south-1 Standard=aws-foundational-security-best-practice
-s/v/1.0.0                                                                                                                     
+s/v/1.0.0
 [...]
 2022-04-14T15:46:18+09:00 INF Disable control Control=Redshift.6 Reason="Redshift is not running." Region=us-west-1 Standard=aws-foundational-security-best-practices
-/v/1.0.0                                                                                                                     
+/v/1.0.0
 2022-04-14T15:46:19+09:00 INF Disable control Control=Redshift.8 Reason="Redshift is not running." Region=us-west-1 Standard=aws-foundational-security-best-practices
-/v/1.0.0                                                                                                                     
+/v/1.0.0
 2022-04-14T15:46:20+09:00 INF Applying to us-west-2
 2022-04-14T15:46:26+09:00 INF Disable control Control=Redshift.4 Reason="Redshift is not running." Region=us-west-2 Standard=aws-foundational-security-best-practices
-/v/1.0.0                                                                                                                     
+/v/1.0.0
 2022-04-14T15:46:27+09:00 INF Disable control Control=Redshift.6 Reason="Redshift is not running." Region=us-west-2 Standard=aws-foundational-security-best-practices
-/v/1.0.0                                                                                                                     
+/v/1.0.0
 2022-04-14T15:46:29+09:00 INF Disable control Control=Redshift.8 Reason="Redshift is not running." Region=us-west-2 Standard=aws-foundational-security-best-practices
-/v/1.0.0                                                                                                                     
+/v/1.0.0
 
 Apply complete
 ```
