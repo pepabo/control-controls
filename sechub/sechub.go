@@ -13,8 +13,8 @@ import (
 )
 
 type Controls struct {
-	Enable  []string `yaml:"enable,flow,omitempty"`
-	Disable []string `yaml:"disable,flow,omitempty"`
+	Enable  []string      `yaml:"enable,flow,omitempty"`
+	Disable yaml.MapSlice `yaml:"disable,omitempty"`
 	arns    map[string]*string
 }
 
@@ -86,7 +86,7 @@ func Intersect(a, b *SecHub) *SecHub {
 		if as.Controls != nil && bs.Controls != nil {
 			is.Controls = &Controls{}
 			is.Controls.Enable = intersect(as.Controls.Enable, bs.Controls.Enable)
-			is.Controls.Disable = intersect(as.Controls.Disable, bs.Controls.Disable)
+			is.Controls.Disable = intersectMapSlice(as.Controls.Disable, bs.Controls.Disable)
 		}
 
 		i.Standards = append(i.Standards, is)
@@ -139,10 +139,10 @@ func Diff(base, a *SecHub) (*SecHub, error) {
 			} else {
 				dstd.Controls.Enable = diff(bstd.Controls.Enable, std.Controls.Enable)
 			}
-			if len(bstd.Controls.Disable) == len(std.Controls.Disable) && len(intersect(bstd.Controls.Disable, std.Controls.Disable)) == len(std.Controls.Disable) {
+			if len(bstd.Controls.Disable) == len(std.Controls.Disable) && len(intersectMapSlice(bstd.Controls.Disable, std.Controls.Disable)) == len(std.Controls.Disable) {
 				dstd.Controls.Disable = nil
 			} else {
-				dstd.Controls.Disable = diff(bstd.Controls.Disable, std.Controls.Disable)
+				dstd.Controls.Disable = diffMapSlice(bstd.Controls.Disable, std.Controls.Disable)
 			}
 		} else {
 			dstd.Controls = std.Controls
@@ -276,7 +276,7 @@ func ctrls(ctx context.Context, c *securityhub.Client, subscriptionArn *string) 
 			case types.ControlStatusEnabled:
 				cs.Enable = append(cs.Enable, *ctrl.ControlId)
 			case types.ControlStatusDisabled:
-				cs.Disable = append(cs.Disable, *ctrl.ControlId)
+				cs.Disable = append(cs.Disable, yaml.MapItem{Key: *ctrl.ControlId, Value: *ctrl.DisabledReason})
 			}
 		}
 		nt = ctrls.NextToken
@@ -297,6 +297,16 @@ func intersect(a, b []string) []string {
 	return i
 }
 
+func intersectMapSlice(a, b yaml.MapSlice) yaml.MapSlice {
+	i := yaml.MapSlice{}
+	for _, e := range a {
+		if containsMapSlice(b, e.Key.(string), e.Value.(string)) {
+			i = append(i, e)
+		}
+	}
+	return i
+}
+
 func diff(base, a []string) []string {
 	i := []string{}
 	for _, e := range a {
@@ -307,9 +317,28 @@ func diff(base, a []string) []string {
 	return i
 }
 
+func diffMapSlice(base, a yaml.MapSlice) yaml.MapSlice {
+	i := yaml.MapSlice{}
+	for _, e := range a {
+		if !containsMapSlice(base, e.Key.(string), e.Value.(string)) {
+			i = append(i, e)
+		}
+	}
+	return i
+}
+
 func contains(s []string, e string) bool {
 	for _, v := range s {
 		if e == v {
+			return true
+		}
+	}
+	return false
+}
+
+func containsMapSlice(s yaml.MapSlice, k, v string) bool {
+	for _, ss := range s {
+		if k == ss.Key.(string) && v == ss.Value.(string) {
 			return true
 		}
 	}

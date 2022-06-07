@@ -132,13 +132,17 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 			// * UpdateStandardsControl - RateLimit of 1 request per second, BurstLimit of 5 requests per second.
 			time.Sleep(1 * time.Second)
 		}
-		for _, id := range std.Controls.Disable {
+		for _, d := range std.Controls.Disable {
+			id := d.Key.(string)
+			if d.Value.(string) != "" {
+				reason = d.Value.(string)
+			}
 			arn, ok := cs.arns[id]
 			if !ok {
 				log.Debug().Str("Region", region).Str("Standard", key).Str("Control", id).Msg("Skip control")
 				continue
 			}
-			if contains(cs.Disable, id) {
+			if containsMapSlice(cs.Disable, id, reason) {
 				continue
 			}
 			update = true
