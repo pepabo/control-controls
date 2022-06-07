@@ -94,5 +94,5 @@ var planCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(planCmd)
-	applyCmd.Flags().StringVarP(&disabledReason, "disabled-reason", "", "", "A description of the reason why you are disabling a security standard control.")
+	planCmd.Flags().StringVarP(&disabledReason, "disabled-reason", "", "", "A description of the reason why you are disabling a security standard control.")
 }
