@@ -48,6 +48,13 @@ var planCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		for _, o := range overlays {
+			oo, err := sechub.Load(o)
+			if err != nil {
+				return err
+			}
+			hub.Overlay(oo)
+		}
 		regions, err := regions(ctx, cfg)
 		if err != nil {
 			return err
@@ -99,4 +106,5 @@ var planCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(planCmd)
 	planCmd.Flags().StringVarP(&disabledReason, "disabled-reason", "", "", "A description of the reason why you are disabling a security standard control.")
+	planCmd.Flags().StringSliceVarP(&overlays, "overlay", "", []string{}, "patch file or directory for overlaying")
 }

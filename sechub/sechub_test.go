@@ -108,3 +108,69 @@ func TestIntersect(t *testing.T) {
 		}
 	}
 }
+
+func TestOverlay(t *testing.T) {
+	tests := []struct {
+		base    *SecHub
+		overlay *SecHub
+		want    *SecHub
+	}{
+		{
+			&SecHub{},
+			&SecHub{},
+			&SecHub{},
+		},
+		{
+			&SecHub{AutoEnable: aws.Bool(false)},
+			&SecHub{AutoEnable: aws.Bool(true)},
+			&SecHub{
+				AutoEnable: aws.Bool(true),
+			},
+		},
+		{
+			&SecHub{Standards: Standards{
+				&Standard{
+					Key: "aws-foundational-security-best-practices/v/1.0.0",
+					Controls: &Controls{
+						Enable: []string{"IAM.1", "IAM.2"},
+						Disable: yaml.MapSlice{
+							yaml.MapItem{Key: "Redshift.4", Value: "Redshit is not running."},
+							yaml.MapItem{Key: "Redshift.6", Value: "Redshit is not running."},
+						},
+					},
+				},
+			}},
+			&SecHub{Standards: Standards{
+				&Standard{
+					Key: "aws-foundational-security-best-practices/v/1.0.0",
+					Controls: &Controls{
+						Enable: []string{"IAM.1", "IAM.3", "Redshift.6"},
+						Disable: yaml.MapSlice{
+							yaml.MapItem{Key: "Redshift.7", Value: "Redshit is not running."},
+						},
+					},
+				},
+			}},
+			&SecHub{Standards: Standards{
+				&Standard{
+					Key: "aws-foundational-security-best-practices/v/1.0.0",
+					Controls: &Controls{
+						Enable: []string{"IAM.1", "IAM.2", "IAM.3", "Redshift.6"},
+						Disable: yaml.MapSlice{
+							yaml.MapItem{Key: "Redshift.4", Value: "Redshit is not running."},
+							yaml.MapItem{Key: "Redshift.7", Value: "Redshit is not running."},
+						},
+					},
+				},
+			}},
+		},
+	}
+
+	for _, tt := range tests {
+		tt.base.Overlay(tt.overlay)
+		opt := cmpopts.IgnoreUnexported(SecHub{}, Standard{}, Controls{})
+		if diff := cmp.Diff(tt.base, tt.want, opt); diff != "" {
+			t.Errorf("%s", diff)
+		}
+	}
+}

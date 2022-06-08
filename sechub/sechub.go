@@ -166,15 +166,34 @@ func Override(base, a *SecHub) (*SecHub, error) {
 	if err != nil {
 		return nil, err
 	}
+	o.overlay(a)
+	return o, nil
+}
 
+func (base *SecHub) Overlay(overlay *SecHub) {
+	base.overlay(overlay)
+
+	for _, r := range base.Regions {
+		if or := overlay.Regions.findByRegionName(r.region); or != nil {
+			r.overlay(or)
+		}
+	}
+	for _, or := range overlay.Regions {
+		if r := base.Regions.findByRegionName(or.region); r == nil {
+			base.Regions = append(base.Regions, or)
+		}
+	}
+}
+
+func (base *SecHub) overlay(overlay *SecHub) {
 	// AutoEnable
-	if a.AutoEnable != nil {
-		o.AutoEnable = a.AutoEnable
+	if overlay.AutoEnable != nil {
+		base.AutoEnable = overlay.AutoEnable
 	}
 
 	// Standards
-	for _, std := range o.Standards {
-		as := a.Standards.findByKey(std.Key)
+	for _, std := range base.Standards {
+		as := overlay.Standards.findByKey(std.Key)
 		if as == nil {
 			continue
 		}
@@ -185,22 +204,27 @@ func Override(base, a *SecHub) (*SecHub, error) {
 		// Standards.Controls
 		if as.Controls != nil {
 			if len(as.Controls.Enable) > 0 {
-				std.Controls.Enable = append(std.Controls.Enable, as.Controls.Enable...)
+				std.Controls.Enable = unique(append(std.Controls.Enable, as.Controls.Enable...))
 			}
 			if len(as.Controls.Disable) > 0 {
-				std.Controls.Disable = append(std.Controls.Disable, as.Controls.Disable...)
+				// If 'Enable' and 'Disable' contain the same key, 'Enable' has priority.
+				disable := yaml.MapSlice{}
+				for _, d := range append(std.Controls.Disable, as.Controls.Disable...) {
+					if !contains(std.Controls.Enable, d.Key.(string)) {
+						disable = append(disable, d)
+					}
+				}
+				std.Controls.Disable = uniqueMapSlice(disable)
 			}
 		}
 	}
-	for _, k := range diff(o.Standards.keys(), a.Standards.keys()) {
-		as := a.Standards.findByKey(k)
+	for _, k := range diff(base.Standards.keys(), overlay.Standards.keys()) {
+		as := overlay.Standards.findByKey(k)
 		if as == nil {
 			continue
 		}
-		o.Standards = append(o.Standards, as)
+		base.Standards = append(overlay.Standards, as)
 	}
-
-	return o, nil
 }
 
 func (rs Regions) findByRegionName(name string) *SecHub {
@@ -343,6 +367,35 @@ func containsMapSlice(s yaml.MapSlice, k, v string) bool {
 		}
 	}
 	return false
+}
+
+func unique(in []string) []string {
+	u := []string{}
+	m := map[string]struct{}{}
+	for _, s := range in {
+		if _, ok := m[s]; ok {
+			continue
+		}
+		u = append(u, s)
+		m[s] = struct{}{}
+	}
+	return u
+}
+
+func uniqueMapSlice(in yaml.MapSlice) yaml.MapSlice {
+	keys := []string{}
+	m := map[string]yaml.MapItem{}
+	for _, s := range in {
+		if _, ok := m[s.Key.(string)]; !ok {
+			keys = append(keys, s.Key.(string))
+		}
+		m[s.Key.(string)] = s
+	}
+	u := yaml.MapSlice{}
+	for _, k := range keys {
+		u = append(u, m[k])
+	}
+	return u
 }
 
 func contextcopy(in *SecHub) (*SecHub, error) {
