@@ -34,6 +34,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	disabledReason string
+	overlays       []string
+)
+
 var rootCmd = &cobra.Command{
 	Use:          "control-controls",
 	Short:        "control-controls control controls of AWS Security Hub across all regions",

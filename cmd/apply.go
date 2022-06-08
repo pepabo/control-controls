@@ -31,8 +31,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var disabledReason string
-
 var applyCmd = &cobra.Command{
 	Use:   "apply [CONFIG_FILE]",
 	Short: "apply",
@@ -48,7 +46,13 @@ var applyCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-
+		for _, o := range overlays {
+			oo, err := sechub.Load(o)
+			if err != nil {
+				return err
+			}
+			hub.Overlay(oo)
+		}
 		regions, err := regions(ctx, cfg)
 		if err != nil {
 			return err
@@ -71,4 +75,5 @@ var applyCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(applyCmd)
 	applyCmd.Flags().StringVarP(&disabledReason, "disabled-reason", "", "", "A description of the reason why you are disabling a security standard control.")
+	applyCmd.Flags().StringSliceVarP(&overlays, "overlay", "", []string{}, "patch file or directory for overlaying")
 }
