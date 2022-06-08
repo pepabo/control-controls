@@ -1,3 +1,7 @@
+## [v0.4.0](https://github.com/pepabo/control-controls/compare/v0.3.0...v0.4.0) (2022-06-08)
+
+* Add `--overlay` option for patch [#11](https://github.com/pepabo/control-controls/pull/11) ([k1LoW](https://github.com/k1LoW))
+
 ## [v0.3.0](https://github.com/pepabo/control-controls/compare/v0.2.1...v0.3.0) (2022-06-07)
 
 * Fix flag [#10](https://github.com/pepabo/control-controls/pull/10) ([k1LoW](https://github.com/k1LoW))
