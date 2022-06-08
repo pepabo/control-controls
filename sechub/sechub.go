@@ -147,7 +147,11 @@ func Diff(base, a *SecHub) (*SecHub, error) {
 		} else {
 			dstd.Controls = std.Controls
 		}
-		if dstd.Controls != nil && len(dstd.Controls.Enable) == 0 && len(dstd.Controls.Disable) == 0 {
+
+		if dstd.Enable == nil && dstd.Controls == nil {
+			continue
+		}
+		if dstd.Enable == nil && dstd.Controls != nil && len(dstd.Controls.Enable) == 0 && len(dstd.Controls.Disable) == 0 {
 			continue
 		}
 
