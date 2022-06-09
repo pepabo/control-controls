@@ -2,6 +2,7 @@ package sechub
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -53,6 +54,9 @@ func Load(p string) (*SecHub, error) {
 	hub := &SecHub{}
 	if err := yaml.Unmarshal(b, hub); err != nil {
 		return nil, err
+	}
+	if err := hub.Validate(); err != nil {
+		return nil, fmt.Errorf("validation error: %s: %w", p, err)
 	}
 	return hub, err
 }
@@ -229,6 +233,40 @@ func (base *SecHub) overlay(overlay *SecHub) {
 		}
 		base.Standards = append(overlay.Standards, as)
 	}
+}
+
+func (sh *SecHub) Validate() error {
+	if err := sh.validate(); err != nil {
+		return err
+	}
+	for _, r := range sh.Regions {
+		if err := r.validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (sh *SecHub) validate() error {
+	for _, std := range sh.Standards {
+		disableKeys := []string{}
+		m := map[string]struct{}{}
+		if std.Controls != nil && len(std.Controls.Disable) > 0 {
+			for _, d := range std.Controls.Disable {
+				key := d.Key.(string)
+				if _, ok := m[key]; ok {
+					return fmt.Errorf("duplicate key: disable control %s", key)
+				}
+				disableKeys = append(disableKeys, key)
+				m[key] = struct{}{}
+			}
+		}
+		dup := intersect(std.Controls.Enable, disableKeys)
+		if len(dup) > 0 {
+			return fmt.Errorf("it exists for both enable contorol and disable contorol: %s", dup)
+		}
+	}
+	return nil
 }
 
 func (rs Regions) findByRegionName(name string) *SecHub {
