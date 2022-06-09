@@ -296,6 +296,57 @@ func TestDiff(t *testing.T) {
 			}},
 			nil,
 		},
+		{
+			&SecHub{Standards: Standards{
+				&Standard{
+					Key:    "aws-foundational-security-best-practices/v/1.0.0",
+					Enable: aws.Bool(true),
+					Controls: &Controls{
+						Enable: []string{"IAM.1", "IAM.2"},
+						Disable: yaml.MapSlice{
+							yaml.MapItem{Key: "IAM.3", Value: "some reason"},
+						},
+					},
+				},
+				&Standard{
+					Key:      "cis-aws-foundations-benchmark/v/1.2.0",
+					Enable:   aws.Bool(true),
+					Controls: &Controls{},
+				},
+			}},
+			&SecHub{Standards: Standards{
+				&Standard{
+					Key:    "aws-foundational-security-best-practices/v/1.0.0",
+					Enable: aws.Bool(true),
+					Controls: &Controls{
+						Enable: []string{"IAM.1", "IAM.2"},
+						Disable: yaml.MapSlice{
+							yaml.MapItem{Key: "IAM.3", Value: "some reason"},
+						},
+					},
+				},
+				&Standard{
+					Key:    "cis-aws-foundations-benchmark/v/1.2.0",
+					Enable: aws.Bool(true),
+					Controls: &Controls{
+						Disable: yaml.MapSlice{
+							yaml.MapItem{Key: "CIS.1.1", Value: "some reason"},
+						},
+					},
+				},
+			}},
+			&SecHub{Standards: Standards{
+				&Standard{
+					Key:    "cis-aws-foundations-benchmark/v/1.2.0",
+					Enable: nil,
+					Controls: &Controls{
+						Disable: yaml.MapSlice{
+							yaml.MapItem{Key: "CIS.1.1", Value: "some reason"},
+						},
+					},
+				},
+			}},
+		},
 	}
 
 	for _, tt := range tests {
