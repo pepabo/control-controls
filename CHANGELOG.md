@@ -1,3 +1,7 @@
+## [v0.5.0](https://github.com/pepabo/control-controls/compare/v0.4.0...v0.5.0) (2022-06-09)
+
+* Add Validate() [#12](https://github.com/pepabo/control-controls/pull/12) ([k1LoW](https://github.com/k1LoW))
+
 ## [v0.4.0](https://github.com/pepabo/control-controls/compare/v0.3.0...v0.4.0) (2022-06-08)
 
 * Add `--overlay` option for patch [#11](https://github.com/pepabo/control-controls/pull/11) ([k1LoW](https://github.com/k1LoW))
