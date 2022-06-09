@@ -267,6 +267,11 @@ s/v/1.0.0
 Apply complete
 ```
 
+## Required permissions
+
+- `ec2:DescribeRegions`
+- `securityhub:*`
+
 ## Install
 
 **homebrew tap:**
