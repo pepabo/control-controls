@@ -143,7 +143,7 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config, reason string) ([]*C
 
 		// Standards.Findings
 		if std.Findings != nil {
-			controls, err := ctrls(ctx, c, s.subscriptionArn)
+			cs, err := ctrls(ctx, c, s.subscriptionArn)
 			if err != nil {
 				return nil, err
 			}
@@ -156,7 +156,7 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config, reason string) ([]*C
 					if region != "" && aa.Region != "" && aa.Region != region {
 						continue
 					}
-					cArn, ok := controls.arns[fg.ControlID]
+					cArn, ok := cs.arns[fg.ControlID]
 					if !ok {
 						return nil, fmt.Errorf("not found: %s", fg.ControlID)
 					}
