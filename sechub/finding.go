@@ -123,7 +123,7 @@ func diffFindingGroups(base, a FindingGroups) FindingGroups {
 	return fgs
 }
 
-func (base FindingGroups) overlay(overlay FindingGroups) {
+func overlayFindingGroups(base, overlay FindingGroups) FindingGroups {
 	for _, ofg := range overlay {
 		basefg, _ := base.FindByControlID(ofg.ControlID)
 		if basefg == nil {
@@ -140,4 +140,5 @@ func (base FindingGroups) overlay(overlay FindingGroups) {
 			baser.Note = r.Note
 		}
 	}
+	return base
 }
