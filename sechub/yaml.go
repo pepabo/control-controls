@@ -1,6 +1,8 @@
 package sechub
 
 import (
+	"fmt"
+
 	"github.com/goccy/go-yaml"
 )
 
@@ -8,10 +10,29 @@ func (s *SecHub) MarshalYAML() ([]byte, error) {
 	stds := yaml.MapSlice{}
 	for _, std := range s.Standards {
 		k := std.Key
-		v := &Standard{
+		fgs := yaml.MapSlice{}
+		for _, fg := range std.Findings {
+			rs := yaml.MapSlice{}
+			for _, r := range fg.Resources {
+				rs = append(rs, yaml.MapItem{
+					Key: r.Arn,
+					Value: yaml.MapSlice{
+						yaml.MapItem{Key: "status", Value: r.Status},
+						yaml.MapItem{Key: "note", Value: r.Note},
+					},
+				})
+			}
+			fgs = append(fgs, yaml.MapItem{
+				Key:   fg.ControlID,
+				Value: rs,
+			})
+		}
+		v := &StandardForYAML{
 			Enable:   std.Enable,
 			Controls: std.Controls,
+			Findings: fgs,
 		}
+
 		stds = append(stds, yaml.MapItem{
 			Key:   k,
 			Value: v,
@@ -77,6 +98,59 @@ func (s *SecHub) UnmarshalYAML(b []byte) error {
 		}
 		s.Regions = append(s.Regions, hub)
 	}
+	return nil
+}
+
+type StandardForYAML struct {
+	Enable   *bool         `yaml:"enable,omitempty"`
+	Controls *Controls     `yaml:"controls,omitempty"`
+	Findings yaml.MapSlice `yaml:"findings,omitempty"`
+}
+
+type StandardForUnmarshal struct {
+	Key      string        `yaml:"key,omitempty"`
+	Enable   *bool         `yaml:"enable,omitempty"`
+	Controls *Controls     `yaml:"controls,omitempty"`
+	Findings yaml.MapSlice `yaml:"findings,omitempty"`
+}
+
+func (s *Standard) UnmarshalYAML(b []byte) error {
+	tmp := &StandardForUnmarshal{}
+	if err := yaml.UnmarshalWithOptions(b, tmp, yaml.UseOrderedMap()); err != nil {
+		return err
+	}
+	s.Key = tmp.Key
+	s.Enable = tmp.Enable
+	s.Controls = tmp.Controls
+	for _, f := range tmp.Findings {
+		fg := &FindingGroup{
+			ControlID: f.Key.(string),
+		}
+		r, ok := f.Value.(yaml.MapSlice)
+		if !ok {
+			return fmt.Errorf("invalid format: %v", string(b))
+		}
+		for _, kv := range r {
+			fr := &FindingResource{
+				Arn: kv.Key.(string),
+			}
+			rr, ok := kv.Value.(yaml.MapSlice)
+			if !ok {
+				return fmt.Errorf("invalid format: %v", string(b))
+			}
+			for _, kkv := range rr {
+				switch kkv.Key.(string) {
+				case "status":
+					fr.Status = kkv.Value.(string)
+				case "note":
+					fr.Note = kkv.Value.(string)
+				}
+			}
+			fg.Resources = append(fg.Resources, fr)
+		}
+		s.Findings = append(s.Findings, fg)
+	}
+
 	return nil
 }
 

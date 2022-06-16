@@ -78,8 +78,10 @@ var planCmd = &cobra.Command{
 		} else {
 			green := color.New(color.FgGreen).PrintfFunc()
 			red := color.New(color.FgRed).PrintfFunc()
+			yellow := color.New(color.FgYellow).PrintfFunc()
 			enable := 0
 			disable := 0
+			change := 0
 			for _, c := range changes {
 				switch c.ChangeType {
 				case sechub.ENABLE:
@@ -92,10 +94,13 @@ var planCmd = &cobra.Command{
 					} else {
 						red("%s %s (disabled reason: %s)\n", c.ChangeType, c.Key, c.DisabledReason)
 					}
+				case sechub.CHANGE:
+					change += 1
+					yellow("%s %s %s\n", c.ChangeType, c.Key, c.Changed)
 				}
 			}
 			cmd.Println("")
-			cmd.Printf("Plan: %d to enable, %d to disable\n", enable, disable)
+			cmd.Printf("Plan: %d to enable, %d to change, %d to disable\n", enable, change, disable)
 			os.Exit(2)
 		}
 

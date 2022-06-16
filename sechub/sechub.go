@@ -20,9 +20,10 @@ type Controls struct {
 }
 
 type Standard struct {
-	Key              string    `yaml:"key,omitempty"`
-	Enable           *bool     `yaml:"enable,omitempty"`
-	Controls         *Controls `yaml:"controls,omitempty"`
+	Key              string        `yaml:"key,omitempty"`
+	Enable           *bool         `yaml:"enable,omitempty"`
+	Controls         *Controls     `yaml:"controls,omitempty"`
+	Findings         FindingGroups `yaml:"-"`
 	arn              *string
 	subscriptionArn  *string
 	enabledByDefault bool
@@ -93,6 +94,9 @@ func Intersect(a, b *SecHub) *SecHub {
 			is.Controls.Disable = intersectMapSlice(as.Controls.Disable, bs.Controls.Disable)
 		}
 
+		// Standards.Findngs
+		is.Findings = intersectFindingGroups(as.Findings, bs.Findings)
+
 		i.Standards = append(i.Standards, is)
 	}
 
@@ -114,7 +118,7 @@ func Diff(base, a *SecHub) (*SecHub, error) {
 	// Standards
 	d.Standards = Standards{}
 	for _, std := range a.Standards {
-		bstd := base.Standards.findByKey(std.Key)
+		bstd := b.Standards.findByKey(std.Key)
 		if bstd == nil {
 			d.Standards = append(d.Standards, std)
 			continue
@@ -155,11 +159,16 @@ func Diff(base, a *SecHub) (*SecHub, error) {
 		if dstd.Enable == nil && dstd.Controls == nil {
 			continue
 		}
-		if dstd.Enable == nil && dstd.Controls != nil && len(dstd.Controls.Enable) == 0 && len(dstd.Controls.Disable) == 0 {
+
+		// Standards.Findings
+		dstd.Findings = diffFindingGroups(bstd.Findings, std.Findings)
+
+		if dstd.Enable == nil && dstd.Controls != nil && len(dstd.Controls.Enable) == 0 && len(dstd.Controls.Disable) == 0 && len(dstd.Findings) == 0 {
 			continue
 		}
 
 		d.Standards = append(d.Standards, dstd)
+
 	}
 
 	if d.AutoEnable == nil && len(d.Standards) == 0 {
@@ -225,6 +234,8 @@ func (base *SecHub) overlay(overlay *SecHub) {
 				std.Controls.Disable = uniqueMapSlice(disable)
 			}
 		}
+		// Standards.Findings
+		std.Findings = overlayFindingGroups(std.Findings, as.Findings)
 	}
 	for _, k := range diff(base.Standards.keys(), overlay.Standards.keys()) {
 		as := overlay.Standards.findByKey(k)
