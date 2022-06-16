@@ -1,3 +1,7 @@
+## [v0.6.0](https://github.com/pepabo/control-controls/compare/v0.5.0...v0.6.0) (2022-06-16)
+
+* Support workflow status (and note) management [#13](https://github.com/pepabo/control-controls/pull/13) ([k1LoW](https://github.com/k1LoW))
+
 ## [v0.5.0](https://github.com/pepabo/control-controls/compare/v0.4.0...v0.5.0) (2022-06-09)
 
 * Add Validate() [#12](https://github.com/pepabo/control-controls/pull/12) ([k1LoW](https://github.com/k1LoW))
