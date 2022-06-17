@@ -1,3 +1,7 @@
+## [v0.6.1](https://github.com/pepabo/control-controls/compare/v0.6.0...v0.6.1) (2022-06-17)
+
+* Fix handling non region arn (eg. `arn:aws:s3:::` ) [#14](https://github.com/pepabo/control-controls/pull/14) ([k1LoW](https://github.com/k1LoW))
+
 ## [v0.6.0](https://github.com/pepabo/control-controls/compare/v0.5.0...v0.6.0) (2022-06-16)
 
 * Support workflow status (and note) management [#13](https://github.com/pepabo/control-controls/pull/13) ([k1LoW](https://github.com/k1LoW))
