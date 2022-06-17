@@ -200,6 +200,10 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 						return err
 					}
 					if len(got.Findings) != 1 {
+						if len(got.Findings) == 0 && aa.Region == "" {
+							// eg. arn:aws:s3:::
+							continue
+						}
 						return fmt.Errorf("not found: %s", r.Arn)
 					}
 					gotFg := got.Findings[0]
