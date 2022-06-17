@@ -172,6 +172,10 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config, reason string) ([]*C
 						return nil, err
 					}
 					if len(got.Findings) != 1 {
+						if len(got.Findings) == 0 && aa.Region == "" {
+							// eg. arn:aws:s3:::
+							continue
+						}
 						return nil, fmt.Errorf("not found: %s", r.Arn)
 					}
 					status := string(got.Findings[0].Workflow.Status)
