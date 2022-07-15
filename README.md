@@ -267,6 +267,102 @@ s/v/1.0.0
 Apply complete
 ```
 
+## Configuration
+
+### `autoEnable`
+
+Automatically enabling new controls across all regions.
+
+ref: https://docs.aws.amazon.com/securityhub/latest/userguide/controls-auto-enable.html
+
+``` yaml
+autoEnable: true
+```
+
+### `standards.<standard>.enable`
+
+Enabling a security standard across all regions.
+
+ref: https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-enable-disable.html
+
+``` yaml
+standards:
+  aws-foundational-security-best-practices/v/1.0.0:
+    enable: true
+  cis-aws-foundations-benchmark/v/1.2.0:
+    enable: true
+  pci-dss/v/3.2.1:
+    enable: false
+```
+
+### `standards.<standard>.controls.enable`
+
+Enabling individual controls across all regions.
+
+ref: https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-enable-disable-controls.html
+
+``` yaml
+standards:
+  aws-foundational-security-best-practices/v/1.0.0:
+    enable: true
+    controls:
+      enable: [APIGateway.5, AutoScaling.1, AutoScaling.2, CloudTrail.1, CloudTrail.2, CloudTrail.4, CloudTrail.5, Config.1, DynamoDB.1, EC2.19, EC2.2, EC2.21, EC2.6, ECR.3, ELB.10, ELB.5, ELB.7, ES.4, ES.5, ES.6, ES.7, ES.8, IAM.1, IAM.2, IAM.3, IAM.5, IAM.6, IAM.7, IAM.8, NetworkFirewall.6, RDS.11, RDS.17, RDS.18, RDS.19, RDS.2, RDS.20, RDS.21, RDS.22, RDS.23, RDS.25, RDS.3, RDS.5, Redshift.4, Redshift.6, Redshift.8, S3.1, S3.10, S3.11, S3.12, S3.2, S3.3, S3.4, S3.5, S3.6, S3.9, SQS.1, SSM.1, SSM.4]
+```
+
+### `standards.<standard>.controls.disable`
+
+Disabling individual controls across all regions.
+
+ref: https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-enable-disable-controls.html
+
+``` yaml
+standards:
+  aws-foundational-security-best-practices/v/1.0.0:
+    enable: true
+    controls:
+      disable:
+        Redshift.4: Redshift is not running.
+        Redshift.6: Redshift is not running.
+        Redshift.8: Redshift is not running.
+```
+
+### `standards.<standard>.findings.<control_id>.<target_arn>.status`
+
+Set workflow status to individual findings across all regions.
+
+ref: https://docs.aws.amazon.com/securityhub/latest/userguide/finding-workflow-status.html
+
+``` yaml
+standards:
+  aws-foundational-security-best-practices/v/1.0.0:
+    findings:
+      S3.2:
+        arn:aws:s3:::static.example.com:
+          status: SUPPRESSED
+          note: Use as simple web hosting
+```
+
+### `standards.<standard>.findings.<control_id>.<target_arn>.note`
+
+Set note to individual findings across all regions.
+
+ref: https://docs.aws.amazon.com/securityhub/latest/userguide/asff-note.html
+
+### `regions.<region>.standards.*`
+
+Set override settings for each region.
+
+## Overlay
+
+It is possible to override the settings with `--overlay` option.
+
+``` console
+$ control-controls plan base.yml --overlay custom.yml
+[...]
+$ control-controls apply base.yml --overlay custom.yml
+[...]
+```
+
 ## Required permissions
 
 - `ec2:DescribeRegions`
