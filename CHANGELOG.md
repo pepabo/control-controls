@@ -1,3 +1,7 @@
+## [v0.6.2](https://github.com/pepabo/control-controls/compare/v0.6.1...v0.6.2) - 2022-10-03
+- Remove homebrew-tap setting because updates in the homebrew-tap repository by @k1LoW in https://github.com/pepabo/control-controls/pull/15
+- Use tagpr by @k1LoW in https://github.com/pepabo/control-controls/pull/16
+
 ## [v0.6.1](https://github.com/pepabo/control-controls/compare/v0.6.0...v0.6.1) (2022-06-17)
 
 * Fix handling non region arn (eg. `arn:aws:s3:::` ) [#14](https://github.com/pepabo/control-controls/pull/14) ([k1LoW](https://github.com/k1LoW))
