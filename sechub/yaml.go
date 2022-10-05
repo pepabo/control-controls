@@ -68,9 +68,10 @@ func (s *SecHub) MarshalYAML() ([]byte, error) {
 }
 
 type SecHubForUnmarshal struct {
-	AutoEnable *bool                          `yaml:"autoEnable,omitempty"`
-	Standards  map[string]*Standard           `yaml:"standards,omitempty"`
-	Regions    map[string]*SecHubForUnmarshal `yaml:"regions,omitempty"`
+	AutoEnable    *bool                          `yaml:"autoEnable,omitempty"`
+	Standards     map[string]*Standard           `yaml:"standards,omitempty"`
+	Regions       map[string]*SecHubForUnmarshal `yaml:"regions,omitempty"`
+	Notifications Notifications                  `yaml:"notifications,omitempty"`
 }
 
 func (s *SecHub) UnmarshalYAML(b []byte) error {
@@ -98,6 +99,7 @@ func (s *SecHub) UnmarshalYAML(b []byte) error {
 		}
 		s.Regions = append(s.Regions, hub)
 	}
+	s.Notifications = tmp.Notifications
 	return nil
 }
 

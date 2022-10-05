@@ -1,6 +1,7 @@
 package sechub
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -354,15 +355,16 @@ func TestDiff(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		got, err := Diff(tt.base, tt.a)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-		opt := cmpopts.IgnoreUnexported(SecHub{}, Standard{}, Controls{})
-		if diff := cmp.Diff(got, tt.want, opt); diff != "" {
-			t.Errorf("%s", diff)
-		}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			got, err := Diff(tt.base, tt.a)
+			if err != nil {
+				t.Error(err)
+			}
+			opt := cmpopts.IgnoreUnexported(SecHub{}, Standard{}, Controls{})
+			if diff := cmp.Diff(got, tt.want, opt); diff != "" {
+				t.Errorf("%s", diff)
+			}
+		})
 	}
 }
