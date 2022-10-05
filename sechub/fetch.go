@@ -22,7 +22,7 @@ func (sh *SecHub) Fetch(ctx context.Context, cfg aws.Config) error {
 	}
 	sh.AutoEnable = aws.Bool(hub.AutoEnableControls)
 	for _, std := range stds {
-		if std.Enable == nil || *std.Enable == false {
+		if std.Enable == nil || !*std.Enable {
 			continue
 		}
 		cs, err := ctrls(ctx, c, std.subscriptionArn)
