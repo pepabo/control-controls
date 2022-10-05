@@ -60,7 +60,7 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config, reason string) ([]*C
 
 	// AutoEnable
 	if diff.AutoEnable != nil {
-		if *diff.AutoEnable == true {
+		if *diff.AutoEnable {
 			changes = append(changes, &Change{
 				Key:        fmt.Sprintf("%s::%s", region, "auto-enable-controls"),
 				ChangeType: ENABLE,
@@ -189,7 +189,7 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config, reason string) ([]*C
 							changed = fmt.Sprintf("%s -> %s", status, r.Status)
 						}
 						changes = append(changes, &Change{
-							Key:        fmt.Sprintf("%s", *cArn),
+							Key:        *cArn,
 							ChangeType: CHANGE,
 							Changed:    changed,
 						})

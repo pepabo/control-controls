@@ -20,25 +20,35 @@ type Controls struct {
 }
 
 type Standard struct {
-	Key              string        `yaml:"key,omitempty"`
-	Enable           *bool         `yaml:"enable,omitempty"`
-	Controls         *Controls     `yaml:"controls,omitempty"`
-	Findings         FindingGroups `yaml:"-"`
+	Key      string        `yaml:"key,omitempty"`
+	Enable   *bool         `yaml:"enable,omitempty"`
+	Controls *Controls     `yaml:"controls,omitempty"`
+	Findings FindingGroups `yaml:"-"`
+
 	arn              *string
 	subscriptionArn  *string
 	enabledByDefault bool
+}
+
+type Notification struct {
+	Cond       string
+	WebhookURL string `yaml:"webhookURL"`
+	Template   interface{}
 }
 
 type Standards []*Standard
 
 type Regions []*SecHub
 
+type Notifications []*Notification
+
 type SecHub struct {
-	AutoEnable *bool `yaml:"autoEnable,omitempty"`
-	Standards  Standards
-	Regions    Regions
-	region     string
-	enabled    bool
+	AutoEnable    *bool `yaml:"autoEnable,omitempty"`
+	Standards     Standards
+	Regions       Regions
+	Notifications Notifications `yaml:"notifications,omitempty"`
+	region        string        // current region
+	enabled       bool          // whether Security Hub is enabled in current region
 }
 
 func New(r string) *SecHub {
@@ -131,10 +141,10 @@ func Diff(base, a *SecHub) (*SecHub, error) {
 			dstd.Enable = std.Enable
 		}
 
-		if dstd.Enable == nil && bstd.Enable != nil && *bstd.Enable == false {
+		if dstd.Enable == nil && bstd.Enable != nil && !*bstd.Enable {
 			continue
 		}
-		if dstd.Enable != nil && *dstd.Enable == false {
+		if dstd.Enable != nil && !*dstd.Enable {
 			d.Standards = append(d.Standards, dstd)
 			continue
 		}
@@ -244,6 +254,21 @@ func (base *SecHub) overlay(overlay *SecHub) {
 		}
 		base.Standards = append(overlay.Standards, as)
 	}
+
+	// Notifications
+	ns := overlay.Notifications
+	for _, b := range base.Notifications {
+		exist := false
+		for _, o := range overlay.Notifications {
+			if b.Cond == o.Cond && b.WebhookURL == o.WebhookURL {
+				exist = true
+			}
+		}
+		if !exist {
+			ns = append(ns, b)
+		}
+	}
+	base.Notifications = ns
 }
 
 func (sh *SecHub) Validate() error {

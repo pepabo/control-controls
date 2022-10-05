@@ -1,6 +1,8 @@
-## [v0.6.2](https://github.com/pepabo/control-controls/compare/v0.6.1...v0.6.2) - 2022-10-03
+## [v0.6.2](https://github.com/pepabo/control-controls/compare/v0.6.1...v0.6.2) - 2022-10-05
 - Remove homebrew-tap setting because updates in the homebrew-tap repository by @k1LoW in https://github.com/pepabo/control-controls/pull/15
 - Use tagpr by @k1LoW in https://github.com/pepabo/control-controls/pull/16
+- Support notification by @k1LoW in https://github.com/pepabo/control-controls/pull/18
+- Bump up go version by @k1LoW in https://github.com/pepabo/control-controls/pull/19
 
 ## [v0.6.1](https://github.com/pepabo/control-controls/compare/v0.6.0...v0.6.1) (2022-06-17)
 

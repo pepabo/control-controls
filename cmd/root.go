@@ -23,11 +23,13 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"os"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/securityhub"
 	"github.com/pepabo/control-controls/version"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -72,4 +74,31 @@ func regions(ctx context.Context, cfg aws.Config) ([]string, error) {
 		regions = append(regions, *r.RegionName)
 	}
 	return regions, nil
+}
+
+func detectAggregationRegion(ctx context.Context, cfg aws.Config) (string, error) {
+	rs, err := regions(ctx, cfg)
+	if err != nil {
+		return "", err
+	}
+	for _, r := range rs {
+		cfg.Region = r
+		c := securityhub.NewFromConfig(cfg)
+		as, err := c.ListFindingAggregators(ctx, &securityhub.ListFindingAggregatorsInput{})
+		if err != nil {
+			return "", err
+		}
+		for _, a := range as.FindingAggregators {
+			aa, err := c.GetFindingAggregator(ctx, &securityhub.GetFindingAggregatorInput{
+				FindingAggregatorArn: a.FindingAggregatorArn,
+			})
+			if err != nil {
+				return "", err
+			}
+			if aa.RegionLinkingMode != nil && aa.FindingAggregationRegion != nil {
+				return *aa.FindingAggregationRegion, nil
+			}
+		}
+	}
+	return "", errors.New("no aggregation region")
 }
