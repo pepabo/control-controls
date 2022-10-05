@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/antonmedv/expr"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/securityhub/types"
 	"github.com/goccy/go-yaml"
 	"github.com/k1LoW/expand"
@@ -76,8 +77,8 @@ type NotifyFinding struct {
 	WorkflowStatus types.WorkflowStatus
 }
 
-func (sh *SecHub) Notify(ctx context.Context, findings []NotifyFinding) error {
-	urep := strings.NewReplacer("ap-northeast-1", sh.region)
+func (sh *SecHub) Notify(ctx context.Context, cfg aws.Config, findings []NotifyFinding) error {
+	urep := strings.NewReplacer("ap-northeast-1", cfg.Region)
 	env := map[string]interface{}{
 		"region":     sh.region,
 		"consoleURL": urep.Replace(defaultConsoleURL),
@@ -160,5 +161,11 @@ func expandBody(tmpl, env interface{}) ([]byte, error) {
 	if err := yaml.Unmarshal([]byte(e), &ee); err != nil {
 		return nil, err
 	}
-	return json.Marshal(ee)
+	buf := new(bytes.Buffer)
+	enc := json.NewEncoder(buf)
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(ee); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }

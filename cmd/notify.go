@@ -68,7 +68,7 @@ var notifyCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if err := hub.Notify(ctx, findings); err != nil {
+		if err := hub.Notify(ctx, cfg, findings); err != nil {
 			return err
 		}
 		return nil

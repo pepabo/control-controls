@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/securityhub/types"
 	"github.com/k1LoW/httpstub"
 	"github.com/tenntenn/golden"
@@ -89,6 +90,12 @@ func TestNotify(t *testing.T) {
 		},
 	}
 	ctx := context.Background()
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	region := "dummy-ap-1"
+	cfg.Region = region
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := httpstub.NewRouter(t)
@@ -98,9 +105,9 @@ func TestNotify(t *testing.T) {
 				ts.Close()
 			})
 			tt.notification.WebhookURL = ts.URL
-			sh := New("dummy-ap-1")
+			sh := New(region)
 			sh.Notifications = append(sh.Notifications, tt.notification)
-			if err := sh.Notify(ctx, tt.findings); err != nil {
+			if err := sh.Notify(ctx, cfg, tt.findings); err != nil {
 				t.Error(err)
 			}
 			if len(r.Requests()) == 0 {

@@ -62,8 +62,8 @@ github.com/josharian/mapfs v0.0.0-20210615234106-095c008854e6 h1:c+ctPFdISggaSNC
 github.com/josharian/mapfs v0.0.0-20210615234106-095c008854e6/go.mod h1:Rv/momJI8DgrWnBZip+SgagpcgORIZQE5SERlxNb8LY=
 github.com/josharian/txtarfs v0.0.0-20210615234325-77aca6df5bca h1:a8xeK4GsWLE4LYo5VI4u1Cn7ZvT1NtXouXR3DdKLB8Q=
 github.com/josharian/txtarfs v0.0.0-20210615234325-77aca6df5bca/go.mod h1:UbC32ft9G/jG+sZI8wLbIBNIrYr7vp/yqMDa9SxVBNA=
-github.com/k1LoW/expand v0.5.2 h1:wlJz8dCouitlGJm8csw8vxY6CSRTju+T+J9sE+h3TII=
-github.com/k1LoW/expand v0.5.2/go.mod h1:HyNqvB5984hIVR+HMPGBZ511XH+49hJa9DGSBkO3AP4=
+github.com/k1LoW/expand v0.5.3 h1:sW7r5RnacdbSJ8fxyObAOEcjgwGRostXT4Laapn+rKw=
+github.com/k1LoW/expand v0.5.3/go.mod h1:HyNqvB5984hIVR+HMPGBZ511XH+49hJa9DGSBkO3AP4=
 github.com/k1LoW/httpstub v0.3.2 h1:mBQT6qqP9ETDzQ5AGS6s+ED6Rmz9n+ZrmjChFh4Q9PE=
 github.com/k1LoW/httpstub v0.3.2/go.mod h1:+DdiOxIHHtRxNc4oHk997R2jYEytpj5s3E2+qR2526A=
 github.com/leodido/go-urn v1.2.0 h1:hpXL4XnriNwQ/ABnpepYM/1vCLWNDfUNts8dX3xTG6Y=
