@@ -48,7 +48,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 
 	// AutoEnable
 	if diff.AutoEnable != nil {
-		if *diff.AutoEnable == true {
+		if *diff.AutoEnable {
 			log.Info().Str("Region", region).Msg("Enable auto-enable-controls")
 		} else {
 			log.Info().Str("Region", region).Msg("Disable auto-enable-controls")

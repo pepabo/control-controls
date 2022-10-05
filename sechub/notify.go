@@ -136,7 +136,9 @@ func (sh *SecHub) Notify(ctx context.Context, findings []NotifyFinding) error {
 		if err != nil {
 			return err
 		}
-		resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			return err
+		}
 	}
 	return nil
 }

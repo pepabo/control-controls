@@ -141,10 +141,10 @@ func Diff(base, a *SecHub) (*SecHub, error) {
 			dstd.Enable = std.Enable
 		}
 
-		if dstd.Enable == nil && bstd.Enable != nil && *bstd.Enable == false {
+		if dstd.Enable == nil && bstd.Enable != nil && !*bstd.Enable {
 			continue
 		}
-		if dstd.Enable != nil && *dstd.Enable == false {
+		if dstd.Enable != nil && !*dstd.Enable {
 			d.Standards = append(d.Standards, dstd)
 			continue
 		}
