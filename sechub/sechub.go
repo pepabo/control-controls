@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/securityhub"
 	"github.com/aws/aws-sdk-go-v2/service/securityhub/types"
 	"github.com/goccy/go-yaml"
+	"github.com/k1LoW/expand"
 )
 
 type Controls struct {
@@ -63,7 +64,7 @@ func Load(p string) (*SecHub, error) {
 		return nil, err
 	}
 	hub := &SecHub{}
-	if err := yaml.Unmarshal(b, hub); err != nil {
+	if err := yaml.Unmarshal(expand.ExpandenvYAMLBytes(b), hub); err != nil {
 		return nil, err
 	}
 	if err := hub.Validate(); err != nil {
