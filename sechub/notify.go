@@ -31,9 +31,8 @@ var defaultTemplate = map[string]interface{}{
 		map[string]interface{}{
 			"type": "section",
 			"text": map[string]interface{}{
-				"type":  "plain_text",
-				"text":  "Notifying because condition '{{ cond }}' is met.",
-				"emoji": true,
+				"type": "mrkdwn",
+				"text": "Notified because condition *'{{ cond }}'* is met.",
 			},
 		},
 		map[string]interface{}{
