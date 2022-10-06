@@ -32,7 +32,7 @@ type Standard struct {
 }
 
 type Notification struct {
-	Cond       string
+	Cond       string `yaml:"if"`
 	WebhookURL string `yaml:"webhookURL"`
 	Template   interface{}
 }
