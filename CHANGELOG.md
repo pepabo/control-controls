@@ -1,3 +1,7 @@
+## [v0.6.3](https://github.com/pepabo/control-controls/compare/v0.6.2...v0.6.3) - 2022-10-06
+- Expand env when load YAML by @k1LoW in https://github.com/pepabo/control-controls/pull/20
+- Fix defaultTemplate by @k1LoW in https://github.com/pepabo/control-controls/pull/22
+
 ## [v0.6.2](https://github.com/pepabo/control-controls/compare/v0.6.1...v0.6.2) - 2022-10-05
 - Remove homebrew-tap setting because updates in the homebrew-tap repository by @k1LoW in https://github.com/pepabo/control-controls/pull/15
 - Use tagpr by @k1LoW in https://github.com/pepabo/control-controls/pull/16
