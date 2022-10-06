@@ -16,7 +16,10 @@ import (
 	"github.com/k1LoW/expand"
 )
 
-const defaultConsoleURL = "https://ap-northeast-1.console.aws.amazon.com/securityhub/home?region=ap-northeast-1#/findings?search=RecordState%3D%255Coperator%255C%253AEQUALS%255C%253AACTIVE%26WorkflowStatus%3D%255Coperator%255C%253AEQUALS%255C%253ANEW%26WorkflowStatus%3D%255Coperator%255C%253AEQUALS%255C%253ANOTIFIED"
+const (
+	defaultHeader     = "AWS Security Hub Notification"
+	defaultConsoleURL = "https://ap-northeast-1.console.aws.amazon.com/securityhub/home?region=ap-northeast-1#/findings?search=RecordState%3D%255Coperator%255C%253AEQUALS%255C%253AACTIVE%26WorkflowStatus%3D%255Coperator%255C%253AEQUALS%255C%253ANEW%26WorkflowStatus%3D%255Coperator%255C%253AEQUALS%255C%253ANOTIFIED"
+)
 
 var defaultTemplate = map[string]interface{}{
 	"blocks": []interface{}{
@@ -24,7 +27,7 @@ var defaultTemplate = map[string]interface{}{
 			"type": "header",
 			"text": map[string]interface{}{
 				"type":  "plain_text",
-				"text":  "AWS Security Hub Notification",
+				"text":  "{{ header }}",
 				"emoji": true,
 			},
 		},
@@ -101,12 +104,16 @@ func (sh *SecHub) Notify(ctx context.Context, cfg aws.Config, findings []NotifyF
 		env[key] = env[key].(int) + 1
 	}
 	for _, n := range sh.Notifications {
+		if n.Header == "" {
+			n.Header = defaultHeader
+		}
 		if n.Cond == "" {
 			return errors.New("no cond")
 		}
 		if n.WebhookURL == "" {
 			return errors.New("no webhookURL")
 		}
+		env["header"] = n.Header
 		env["cond"] = n.Cond
 		tf, err := expr.Eval(fmt.Sprintf("(%s) == true", n.Cond), env)
 		if err != nil {

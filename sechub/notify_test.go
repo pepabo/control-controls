@@ -88,6 +88,20 @@ func TestNotify(t *testing.T) {
 			},
 			true,
 		},
+		{
+			"change header",
+			&Notification{
+				Header: "Notification!!",
+				Cond:   "true",
+			},
+			[]NotifyFinding{
+				{
+					SeverityLabel:  types.SeverityLabelCritical,
+					WorkflowStatus: types.WorkflowStatusNew,
+				},
+			},
+			true,
+		},
 	}
 	ctx := context.Background()
 	cfg, err := config.LoadDefaultConfig(ctx)

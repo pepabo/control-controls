@@ -33,6 +33,7 @@ type Standard struct {
 
 type Notification struct {
 	Cond       string `yaml:"if"`
+	Header     string `yaml:"header,omitempty"`
 	WebhookURL string `yaml:"webhookURL"`
 	Template   interface{}
 }
