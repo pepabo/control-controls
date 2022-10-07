@@ -92,7 +92,21 @@ func TestNotify(t *testing.T) {
 			"change header",
 			&Notification{
 				Header: "Notification!!",
-				If:   "true",
+				If:     "true",
+			},
+			[]NotifyFinding{
+				{
+					SeverityLabel:  types.SeverityLabelCritical,
+					WorkflowStatus: types.WorkflowStatusNew,
+				},
+			},
+			true,
+		},
+		{
+			"change message",
+			&Notification{
+				Message: "Notice!!",
+				If:      "true",
 			},
 			[]NotifyFinding{
 				{
