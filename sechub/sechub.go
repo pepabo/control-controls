@@ -32,7 +32,7 @@ type Standard struct {
 }
 
 type Notification struct {
-	Cond       string `yaml:"if"`
+	If       string `yaml:"if"`
 	Header     string `yaml:"header,omitempty"`
 	WebhookURL string `yaml:"webhookURL"`
 	Template   interface{}
@@ -262,7 +262,7 @@ func (base *SecHub) overlay(overlay *SecHub) {
 	for _, b := range base.Notifications {
 		exist := false
 		for _, o := range overlay.Notifications {
-			if b.Cond == o.Cond && b.WebhookURL == o.WebhookURL {
+			if b.If == o.If && b.WebhookURL == o.WebhookURL {
 				exist = true
 			}
 		}

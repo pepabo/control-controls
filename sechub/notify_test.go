@@ -23,7 +23,7 @@ func TestNotify(t *testing.T) {
 		{
 			"use default template",
 			&Notification{
-				Cond: "true",
+				If: "true",
 			},
 			[]NotifyFinding{
 				{
@@ -36,7 +36,7 @@ func TestNotify(t *testing.T) {
 		{
 			"cond false",
 			&Notification{
-				Cond: "false",
+				If: "false",
 			},
 			[]NotifyFinding{
 				{
@@ -49,7 +49,7 @@ func TestNotify(t *testing.T) {
 		{
 			"notify critical",
 			&Notification{
-				Cond: "critical > 0",
+				If: "critical > 0",
 			},
 			[]NotifyFinding{
 				{
@@ -62,7 +62,7 @@ func TestNotify(t *testing.T) {
 		{
 			"not notify critical",
 			&Notification{
-				Cond: "critical > 0",
+				If: "critical > 0",
 			},
 			[]NotifyFinding{
 				{
@@ -75,7 +75,7 @@ func TestNotify(t *testing.T) {
 		{
 			"use custom template",
 			&Notification{
-				Cond: "true",
+				If: "true",
 				Template: map[string]interface{}{
 					"critical": "CRITICAL: {{ critical }}",
 				},
@@ -92,7 +92,7 @@ func TestNotify(t *testing.T) {
 			"change header",
 			&Notification{
 				Header: "Notification!!",
-				Cond:   "true",
+				If:   "true",
 			},
 			[]NotifyFinding{
 				{
