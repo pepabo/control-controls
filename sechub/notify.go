@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/antonmedv/expr"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -81,9 +82,14 @@ type NotifyFinding struct {
 
 func (sh *SecHub) Notify(ctx context.Context, cfg aws.Config, findings []NotifyFinding) error {
 	urep := strings.NewReplacer("ap-northeast-1", cfg.Region)
+	now := time.Now()
 	env := map[string]interface{}{
 		"region":     sh.region,
 		"consoleURL": urep.Replace(defaultConsoleURL),
+		"month":      int(now.Month()),
+		"day":        now.Day(),
+		"hour":       now.Hour(),
+		"weekday":    int(now.Weekday()),
 	}
 	for _, sl := range types.SeverityLabelCritical.Values() {
 		slkey := strings.ToLower(string(sl))
