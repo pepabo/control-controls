@@ -107,15 +107,15 @@ func (sh *SecHub) Notify(ctx context.Context, cfg aws.Config, findings []NotifyF
 		if n.Header == "" {
 			n.Header = defaultHeader
 		}
-		if n.Cond == "" {
+		if n.If == "" {
 			return errors.New("no cond")
 		}
 		if n.WebhookURL == "" {
 			return errors.New("no webhookURL")
 		}
 		env["header"] = n.Header
-		env["cond"] = n.Cond
-		tf, err := expr.Eval(fmt.Sprintf("(%s) == true", n.Cond), env)
+		env["cond"] = n.If
+		tf, err := expr.Eval(fmt.Sprintf("(%s) == true", n.If), env)
 		if err != nil {
 			return err
 		}
