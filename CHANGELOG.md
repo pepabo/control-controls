@@ -1,3 +1,11 @@
+## [v0.6.5](https://github.com/pepabo/control-controls/compare/v0.6.4...v0.6.5) - 2022-10-07
+- Fix defaultTemplate and Add `message:` by @k1LoW in https://github.com/pepabo/control-controls/pull/27
+
+## [v0.6.4](https://github.com/pepabo/control-controls/compare/v0.6.3...v0.6.4) - 2022-10-07
+- Change `cond:` to `if:` by @k1LoW in https://github.com/pepabo/control-controls/pull/23
+- Add `header:` to customize header only by @k1LoW in https://github.com/pepabo/control-controls/pull/25
+- Fix field name by @k1LoW in https://github.com/pepabo/control-controls/pull/26
+
 ## [v0.6.3](https://github.com/pepabo/control-controls/compare/v0.6.2...v0.6.3) - 2022-10-06
 - Expand env when load YAML by @k1LoW in https://github.com/pepabo/control-controls/pull/20
 - Fix defaultTemplate by @k1LoW in https://github.com/pepabo/control-controls/pull/22
