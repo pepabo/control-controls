@@ -17,25 +17,25 @@ import (
 )
 
 const (
-	defaultHeader     = "AWS Security Hub Notification"
-	defaultConsoleURL = "https://ap-northeast-1.console.aws.amazon.com/securityhub/home?region=ap-northeast-1#/findings?search=RecordState%3D%255Coperator%255C%253AEQUALS%255C%253AACTIVE%26WorkflowStatus%3D%255Coperator%255C%253AEQUALS%255C%253ANEW%26WorkflowStatus%3D%255Coperator%255C%253AEQUALS%255C%253ANOTIFIED"
+	defaultHeader      = "'*AWS Security Hub Notification*'"
+	defaultMessageTmpl = "Notified because condition *'%s'* is met."
+	defaultConsoleURL  = "https://ap-northeast-1.console.aws.amazon.com/securityhub/home?region=ap-northeast-1#/findings?search=RecordState%3D%255Coperator%255C%253AEQUALS%255C%253AACTIVE%26WorkflowStatus%3D%255Coperator%255C%253AEQUALS%255C%253ANEW%26WorkflowStatus%3D%255Coperator%255C%253AEQUALS%255C%253ANOTIFIED"
 )
 
 var defaultTemplate = map[string]interface{}{
 	"blocks": []interface{}{
 		map[string]interface{}{
-			"type": "header",
+			"type": "section",
 			"text": map[string]interface{}{
-				"type":  "plain_text",
-				"text":  "{{ header }}",
-				"emoji": true,
+				"type": "mrkdwn",
+				"text": "{{ header }}",
 			},
 		},
 		map[string]interface{}{
 			"type": "section",
 			"text": map[string]interface{}{
 				"type": "mrkdwn",
-				"text": "Notified because condition *'{{ cond }}'* is met.",
+				"text": "{{ message }}",
 			},
 		},
 		map[string]interface{}{
@@ -107,6 +107,9 @@ func (sh *SecHub) Notify(ctx context.Context, cfg aws.Config, findings []NotifyF
 		if n.Header == "" {
 			n.Header = defaultHeader
 		}
+		if n.Message == "" {
+			n.Message = fmt.Sprintf(defaultMessageTmpl, n.If)
+		}
 		if n.If == "" {
 			return errors.New("no cond")
 		}
@@ -115,6 +118,7 @@ func (sh *SecHub) Notify(ctx context.Context, cfg aws.Config, findings []NotifyF
 		}
 		env["header"] = n.Header
 		env["cond"] = n.If
+		env["message"] = n.Message
 		tf, err := expr.Eval(fmt.Sprintf("(%s) == true", n.If), env)
 		if err != nil {
 			return err

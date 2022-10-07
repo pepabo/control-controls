@@ -32,8 +32,9 @@ type Standard struct {
 }
 
 type Notification struct {
-	If       string `yaml:"if"`
+	If         string `yaml:"if"`
 	Header     string `yaml:"header,omitempty"`
+	Message    string `yaml:"message,omitempty"`
 	WebhookURL string `yaml:"webhookURL"`
 	Template   interface{}
 }
