@@ -1,3 +1,6 @@
+## [v0.6.6](https://github.com/pepabo/control-controls/compare/v0.6.5...v0.6.6) - 2022-10-07
+- Add params for time condition by @k1LoW in https://github.com/pepabo/control-controls/pull/29
+
 ## [v0.6.5](https://github.com/pepabo/control-controls/compare/v0.6.4...v0.6.5) - 2022-10-07
 - Fix defaultTemplate and Add `message:` by @k1LoW in https://github.com/pepabo/control-controls/pull/27
 
