@@ -1,3 +1,7 @@
+## [v0.7.0](https://github.com/pepabo/control-controls/compare/v0.6.6...v0.7.0) - 2023-01-12
+- Update packages by @k1LoW in https://github.com/pepabo/control-controls/pull/31
+- Target only findings whose RecordState is ACTIVE. by @k1LoW in https://github.com/pepabo/control-controls/pull/33
+
 ## [v0.6.6](https://github.com/pepabo/control-controls/compare/v0.6.5...v0.6.6) - 2022-10-07
 - Add params for time condition by @k1LoW in https://github.com/pepabo/control-controls/pull/29
 
