@@ -166,6 +166,7 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config, reason string) ([]*C
 							ResourceId:    []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(r.Arn)}},
 							ProductName:   []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("Security Hub")}},
 							ProductFields: []types.MapFilter{types.MapFilter{Comparison: types.MapFilterComparisonEquals, Key: aws.String("StandardsControlArn"), Value: cArn}},
+							RecordState:   []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("ACTIVE")}},
 						},
 					})
 					if err != nil {

@@ -194,6 +194,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 							ResourceId:    []types.StringFilter{{Comparison: types.StringFilterComparisonEquals, Value: aws.String(r.Arn)}},
 							ProductName:   []types.StringFilter{{Comparison: types.StringFilterComparisonEquals, Value: aws.String("Security Hub")}},
 							ProductFields: []types.MapFilter{{Comparison: types.MapFilterComparisonEquals, Key: aws.String("StandardsControlArn"), Value: cArn}},
+							RecordState:   []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("ACTIVE")}},
 						},
 					})
 					if err != nil {
