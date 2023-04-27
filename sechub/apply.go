@@ -169,6 +169,13 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 			}
 		}
 
+		// ControlFindingGenerator
+		hub, err := c.DescribeHub(ctx, &securityhub.DescribeHubInput{})
+		if err != nil {
+			return err
+		}
+		ctrlfg := string(hub.ControlFindingGenerator)
+
 		// Standards.Findings
 		if std.Findings != nil {
 			cs, err := ctrls(ctx, c, s.subscriptionArn)
@@ -188,14 +195,21 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 					if !ok {
 						return fmt.Errorf("not found: %s", fg.ControlID)
 					}
+
+					findingFilters := &types.AwsSecurityFindingFilters{
+						AwsAccountId: []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(a.AccountID)}},
+						ResourceId:   []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(r.Arn)}},
+						ProductName:  []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("Security Hub")}},
+						RecordState:  []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("ACTIVE")}},
+					}
+					if ctrlfg == "SECURITY_CONTROL" {
+						findingFilters.ComplianceSecurityControlId = []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(fg.ControlID)}}
+						findingFilters.ComplianceAssociatedStandardsId = []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(fmt.Sprintf("standards/%s", key))}}
+					} else {
+						findingFilters.ProductFields = []types.MapFilter{types.MapFilter{Comparison: types.MapFilterComparisonEquals, Key: aws.String("StandardsControlArn"), Value: cArn}}
+					}
 					got, err := c.GetFindings(ctx, &securityhub.GetFindingsInput{
-						Filters: &types.AwsSecurityFindingFilters{
-							AwsAccountId:  []types.StringFilter{{Comparison: types.StringFilterComparisonEquals, Value: aws.String(a.AccountID)}},
-							ResourceId:    []types.StringFilter{{Comparison: types.StringFilterComparisonEquals, Value: aws.String(r.Arn)}},
-							ProductName:   []types.StringFilter{{Comparison: types.StringFilterComparisonEquals, Value: aws.String("Security Hub")}},
-							ProductFields: []types.MapFilter{{Comparison: types.MapFilterComparisonEquals, Key: aws.String("StandardsControlArn"), Value: cArn}},
-							RecordState:   []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("ACTIVE")}},
-						},
+						Filters: findingFilters,
 					})
 					if err != nil {
 						return err
