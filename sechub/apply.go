@@ -174,7 +174,7 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 		if err != nil {
 			return err
 		}
-		ctrlfg := string(hub.ControlFindingGenerator)
+		ctrlfg := hub.ControlFindingGenerator
 
 		// Standards.Findings
 		if std.Findings != nil {
@@ -202,11 +202,14 @@ func (sh *SecHub) Apply(ctx context.Context, cfg aws.Config, reason string) erro
 						ProductName:  []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("Security Hub")}},
 						RecordState:  []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("ACTIVE")}},
 					}
-					if ctrlfg == "SECURITY_CONTROL" {
+					switch ctrlfg {
+					case types.ControlFindingGeneratorSecurityControl:
 						findingFilters.ComplianceSecurityControlId = []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(fg.ControlID)}}
 						findingFilters.ComplianceAssociatedStandardsId = []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(fmt.Sprintf("standards/%s", key))}}
-					} else {
+					case types.ControlFindingGeneratorStandardControl:
 						findingFilters.ProductFields = []types.MapFilter{types.MapFilter{Comparison: types.MapFilterComparisonEquals, Key: aws.String("StandardsControlArn"), Value: cArn}}
+					default:
+						return fmt.Errorf("unsupported ControlFindingGenerator: %v", ctrlfg)
 					}
 					got, err := c.GetFindings(ctx, &securityhub.GetFindingsInput{
 						Filters: findingFilters,
