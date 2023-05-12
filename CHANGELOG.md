@@ -1,3 +1,5 @@
+## [v0.8.1](https://github.com/pepabo/control-controls/compare/v0.8.0...v0.8.1) - 2023-05-12
+
 ## [v0.8.0](https://github.com/pepabo/control-controls/compare/v0.7.0...v0.8.0) - 2023-05-12
 - (ref #34) feat: Add improve handling of ControlFindingGenerator by @htnosm in https://github.com/pepabo/control-controls/pull/35
 
