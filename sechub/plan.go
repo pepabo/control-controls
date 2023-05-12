@@ -141,6 +141,13 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config, reason string) ([]*C
 			}
 		}
 
+		// ControlFindingGenerator
+		hub, err := c.DescribeHub(ctx, &securityhub.DescribeHubInput{})
+		if err != nil {
+			return nil, err
+		}
+		ctrlfg := hub.ControlFindingGenerator
+
 		// Standards.Findings
 		if std.Findings != nil {
 			cs, err := ctrls(ctx, c, s.subscriptionArn)
@@ -160,14 +167,24 @@ func (sh *SecHub) Plan(ctx context.Context, cfg aws.Config, reason string) ([]*C
 					if !ok {
 						return nil, fmt.Errorf("not found: %s", fg.ControlID)
 					}
+
+					findingFilters := &types.AwsSecurityFindingFilters{
+						AwsAccountId: []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(a.AccountID)}},
+						ResourceId:   []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(r.Arn)}},
+						ProductName:  []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("Security Hub")}},
+						RecordState:  []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("ACTIVE")}},
+					}
+					switch ctrlfg {
+					case types.ControlFindingGeneratorSecurityControl:
+						findingFilters.ComplianceSecurityControlId = []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(fg.ControlID)}}
+						findingFilters.ComplianceAssociatedStandardsId = []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(fmt.Sprintf("standards/%s", key))}}
+					case types.ControlFindingGeneratorStandardControl:
+						findingFilters.ProductFields = []types.MapFilter{types.MapFilter{Comparison: types.MapFilterComparisonEquals, Key: aws.String("StandardsControlArn"), Value: cArn}}
+					default:
+						return nil, fmt.Errorf("unsupported ControlFindingGenerator: %v", ctrlfg)
+					}
 					got, err := c.GetFindings(ctx, &securityhub.GetFindingsInput{
-						Filters: &types.AwsSecurityFindingFilters{
-							AwsAccountId:  []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(a.AccountID)}},
-							ResourceId:    []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String(r.Arn)}},
-							ProductName:   []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("Security Hub")}},
-							ProductFields: []types.MapFilter{types.MapFilter{Comparison: types.MapFilterComparisonEquals, Key: aws.String("StandardsControlArn"), Value: cArn}},
-							RecordState:   []types.StringFilter{types.StringFilter{Comparison: types.StringFilterComparisonEquals, Value: aws.String("ACTIVE")}},
-						},
+						Filters: findingFilters,
 					})
 					if err != nil {
 						return nil, err
