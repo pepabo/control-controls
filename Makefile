@@ -42,7 +42,7 @@ prerelease:
 	git tag ${VER}
 
 prerelease_for_tagpr:
-	gocredits -w
+	gocredits -w .
 	git add CHANGELOG.md CREDITS go.mod go.sum
 
 release:
