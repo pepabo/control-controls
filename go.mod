@@ -1,6 +1,6 @@
 module github.com/pepabo/control-controls
 
-go 1.19
+go 1.22
 
 require (
 	github.com/antonmedv/expr v1.9.0
