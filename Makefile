@@ -47,6 +47,6 @@ prerelease_for_tagpr:
 
 release:
 	git push origin main --tag
-	goreleaser --rm-dist
+	goreleaser --clean
 
 .PHONY: default test
