@@ -4,4 +4,4 @@ package version
 const Name string = "control-controls"
 
 // Version for this
-var Version = "0.8.1"
+var Version = "0.8.2"
