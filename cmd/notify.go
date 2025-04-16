@@ -33,6 +33,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var dryrun bool
+
 var notifyCmd = &cobra.Command{
 	Use:   "notify [CONFIG_FILE]",
 	Short: "notify",
@@ -68,7 +70,7 @@ var notifyCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if err := hub.Notify(ctx, cfg, findings); err != nil {
+		if err := hub.Notify(ctx, cfg, findings, dryrun); err != nil {
 			return err
 		}
 		return nil
@@ -78,6 +80,8 @@ var notifyCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(notifyCmd)
 	notifyCmd.Flags().StringSliceVarP(&overlays, "overlay", "", []string{}, "patch file or directory for overlaying")
+	notifyCmd.Flags().BoolVarP(&dryrun, "stdout", "s", false, "output notifications to stdout")
+
 }
 
 func collectActiveFindings(ctx context.Context, cfg aws.Config) ([]sechub.NotifyFinding, error) {
