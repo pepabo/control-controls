@@ -1,3 +1,6 @@
+## [v0.8.4](https://github.com/pepabo/control-controls/compare/v0.8.3...v0.8.4) - 2025-04-16
+- introduce the --dryrun option to the notify command  by @hiboma in https://github.com/pepabo/control-controls/pull/43
+
 ## [v0.8.3](https://github.com/pepabo/control-controls/compare/v0.8.2...v0.8.3) - 2024-10-02
 
 ## [v0.8.2](https://github.com/pepabo/control-controls/compare/v0.8.1...v0.8.2) - 2024-10-02
