@@ -80,7 +80,7 @@ type NotifyFinding struct {
 	WorkflowStatus types.WorkflowStatus
 }
 
-func (sh *SecHub) Notify(ctx context.Context, cfg aws.Config, findings []NotifyFinding) error {
+func (sh *SecHub) Notify(ctx context.Context, cfg aws.Config, findings []NotifyFinding, dryrun bool) error {
 	urep := strings.NewReplacer("ap-northeast-1", cfg.Region)
 	now := time.Now()
 	env := map[string]interface{}{
@@ -119,7 +119,7 @@ func (sh *SecHub) Notify(ctx context.Context, cfg aws.Config, findings []NotifyF
 		if n.If == "" {
 			return errors.New("no cond")
 		}
-		if n.WebhookURL == "" {
+		if !dryrun && n.WebhookURL == "" {
 			return errors.New("no webhookURL")
 		}
 		env["header"] = n.Header
@@ -139,6 +139,16 @@ func (sh *SecHub) Notify(ctx context.Context, cfg aws.Config, findings []NotifyF
 		if err != nil {
 			return err
 		}
+
+		if dryrun {
+			var out bytes.Buffer
+			if err := json.Indent(&out, b, "", "  "); err != nil {
+				return err
+			}
+			fmt.Println(out.String())
+			continue
+		}
+
 		req, err := http.NewRequest(
 			http.MethodPost,
 			n.WebhookURL,

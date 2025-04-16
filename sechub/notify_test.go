@@ -116,6 +116,19 @@ func TestNotify(t *testing.T) {
 			},
 			true,
 		},
+		{
+			"dryrun true",
+			&Notification{
+				If: "true",
+			},
+			[]NotifyFinding{
+				{
+					SeverityLabel:  types.SeverityLabelCritical,
+					WorkflowStatus: types.WorkflowStatusNew,
+				},
+			},
+			false,
+		},
 	}
 	ctx := context.Background()
 	cfg, err := config.LoadDefaultConfig(ctx)
@@ -135,7 +148,8 @@ func TestNotify(t *testing.T) {
 			tt.notification.WebhookURL = ts.URL
 			sh := New(region)
 			sh.Notifications = append(sh.Notifications, tt.notification)
-			if err := sh.Notify(ctx, cfg, tt.findings); err != nil {
+			dryrun := tt.name == "dryrun true"
+			if err := sh.Notify(ctx, cfg, tt.findings, dryrun); err != nil {
 				t.Error(err)
 			}
 			if len(r.Requests()) == 0 {
