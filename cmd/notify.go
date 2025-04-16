@@ -80,7 +80,7 @@ var notifyCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(notifyCmd)
 	notifyCmd.Flags().StringSliceVarP(&overlays, "overlay", "", []string{}, "patch file or directory for overlaying")
-	notifyCmd.Flags().BoolVarP(&dryrun, "stdout", "s", false, "output notifications to stdout")
+	notifyCmd.Flags().BoolVarP(&dryrun, "dryrun", "s", false, "output notifications to stdout")
 
 }
 
